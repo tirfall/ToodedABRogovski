@@ -23,3 +23,16 @@ C:\Users\37256\Source\Repos\ToodedAB\obj\Debug\ToodedAB.csproj.GenerateResource.
 C:\Users\37256\Source\Repos\ToodedAB\obj\Debug\ToodedAB.csproj.CoreCompileInputs.cache
 C:\Users\37256\Source\Repos\ToodedAB\obj\Debug\ToodedAB.exe
 C:\Users\37256\Source\Repos\ToodedAB\obj\Debug\ToodedAB.pdb
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\bin\Debug\AppData\Tooded_DB.mdf
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\bin\Debug\AppData\Tooded_DB_log.ldf
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\bin\Debug\ToodedAB.exe.config
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\bin\Debug\ToodedAB.exe
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\bin\Debug\ToodedAB.pdb
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\obj\Debug\ToodedAB.csproj.AssemblyReference.cache
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\obj\Debug\ToodedAB.csproj.SuggestedBindingRedirects.cache
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\obj\Debug\ToodedAB.Properties.Resources.resources
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\obj\Debug\ToodedAB.csproj.GenerateResource.cache
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\obj\Debug\ToodedAB.csproj.CoreCompileInputs.cache
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\obj\Debug\ToodedAB.exe
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\obj\Debug\ToodedAB.pdb
+C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (2)\obj\Debug\ToodedAB.ToodedAB.resources
