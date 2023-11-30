@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.IO;
 
 namespace ToodedAB
 {
@@ -25,6 +26,9 @@ namespace ToodedAB
         Dictionary<string,int> kategooria;
         Dictionary<int, string> kategooriaRev;
         int SelectId;
+        PictureBox pb;
+        OpenFileDialog ofd;
+        SaveFileDialog save;
         public ToodedAB()
         {
             InitializeComponent();
@@ -50,10 +54,12 @@ namespace ToodedAB
             btn5.Click += Btn5_Click;
             btn6 = new Button() { Text = "Kustuta", Location = new Point(btn5.Right + 15, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
             btn6.Click += Btn6_Click;
-
+            pb = new PictureBox() { Location = new Point(btn5.Right-btn5.Width/2,cb1.Top-10),Size = new Size(200,200), BackColor=Color.Gray};
+            ofd = new OpenFileDialog(){ FileName = "Valige pildifail",Multiselect=true,InitialDirectory=Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),Title = "Avage pildifail",Filter = "Image Files|*.jpeg; *.jpg; *.gif; *.bmp; *.png; *.tiff; *.icon; *.emf; *.wmf"};
+            save = new SaveFileDialog() {  InitialDirectory=Path.GetFullPath(@"..\..\Images") };
             dgv.CellClick +=Dgv_CellClick;
             cb1.SelectedValueChanged+=Cb_SelectedValueChanged;
-            this.Controls.AddRange(new Control[] {lb1,lb2,lb3,lb4,lb5,cb1,cb2,cb3,cb4,cb5,btn1,btn2,btn3,btn4,btn5,btn6});
+            this.Controls.AddRange(new Control[] {lb1,lb2,lb3,lb4,lb5,cb1,cb2,cb3,cb4,cb5,btn1,btn2,btn3,btn4,btn5,btn6, pb});
             Naita();
 
         }
@@ -88,12 +94,23 @@ namespace ToodedAB
 
         private void Dgv_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            //int i = 0;
-            //foreach (ComboBox item in new ComboBox[] { cb1, cb2, cb3, cb4, cb5 })
-            //{
-            //    item.Text = dgv.Rows[e.RowIndex].Cells[i].Value.ToString();
-            //    i++;
-            //}
+            int i = 0;
+            foreach (ComboBox item in new ComboBox[] { cb1, cb2, cb3, cb4, cb5 })
+            {
+                item.Text = dgv.Rows[e.RowIndex].Cells[i].Value.ToString();
+                i++;
+            }
+            try
+            {
+                foreach (var item in new string[] {".jpeg", ".jpg", ".gif", ".bmp", ".png", ".tiff", ".icon", ".emf", ".wmf"})
+                { 
+                    pb.ImageLocation = "Images\\"+cb1.Text.ToLower()+item;
+                    pb.Load();
+                }
+            }
+            catch (Exception)
+            { 
+            }
         }
 
         private void Btn5_Click(object sender, EventArgs e)
@@ -129,9 +146,21 @@ namespace ToodedAB
 
         private void Btn3_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (cb1.Items.Contains(cb1.Text) && ofd.ShowDialog() == DialogResult.OK)
+            {
+                using (Stream str = ofd.OpenFile())
+                {
+                    pb.Image = new Bitmap(ofd.FileName);
+                    pb.SizeMode = PictureBoxSizeMode.Zoom;
+                    save.FileName=cb1.Text+Path.GetExtension(ofd.FileName);
+                    save.Filter="Images|"+Path.GetExtension(ofd.FileName);
+                    if (save.ShowDialog()==DialogResult.OK)
+                    {
+                        File.Copy(ofd.FileName, save.FileName);
+                    }
+                }
+            }
         }
-
         private void Btn2_Click(object sender, EventArgs e)
         {
             command = new SqlCommand("DELETE FROM Kategooria WHERE Kategooria_nimetus=@kat", connect);
@@ -202,31 +231,34 @@ namespace ToodedAB
 
         private void NaitaAndmed()
         {
+            //connect.Open();
+            //DataTable dt_toode = new DataTable();
+            //DataTable table = new DataTable();
+            //adapter_toode = new SqlDataAdapter("SELECT Toodetable.Toodenimetus,Toodetable.Kogus,Toodetable.Hind,Toodetable.Pilt,Kategooria.Kategooria_nimetus FROM Toodetable INNER JOIN Kategooria ON Toodetable.Kategooriad = Kategooria.Id;", connect);
+            //adapter_toode.Fill(dt_toode);
+            //table.Columns.Add("Nimetus");
+            //table.Columns.Add("Kogus");
+            //table.Columns.Add("Hind");
+            //table.Columns.Add("Pilt");
+            //DataGridViewComboBoxColumn dgvcb = new DataGridViewComboBoxColumn();
+            //dgvcb.HeaderText= "Kategooria";
+            //foreach (DataRow item in dt_toode.Rows)
+            //{
+            //    if (!dgvcb.Items.Contains(item["Kategooria_nimetus"]))
+            //        dgvcb.Items.Add(item["Kategooria_nimetus"]);
+            //}
+            //foreach (DataRow item in dt_toode.Rows)
+            //    table.Rows.Add(item["Toodenimetus"], item["Kogus"], item["Hind"], item["Pilt"]);
+            //dgv.Columns.Add(dgvcb);
+            //dgv.Rows.Add(dgvcb.Items[0]);
+            //dgv.DataSource = table;
+            //connect.Close();
+
             connect.Open();
             DataTable dt_toode = new DataTable();
-            DataTable table = new DataTable();
             adapter_toode = new SqlDataAdapter("SELECT Toodetable.Toodenimetus,Toodetable.Kogus,Toodetable.Hind,Toodetable.Pilt,Kategooria.Kategooria_nimetus FROM Toodetable INNER JOIN Kategooria ON Toodetable.Kategooriad = Kategooria.Id;", connect);
             adapter_toode.Fill(dt_toode);
-            table.Columns.Add("Nimetus");
-            table.Columns.Add("Kogus");
-            table.Columns.Add("Hind");
-            table.Columns.Add("Pilt");
-            DataGridViewComboBoxColumn dgvcb = new DataGridViewComboBoxColumn();
-            dgvcb.HeaderText= "Kategooria";
-            foreach (DataRow item in dt_toode.Rows)
-            {
-                if (!dgvcb.Items.Contains(item["Kategooria_nimetus"]))
-                    dgvcb.Items.Add(item["Kategooria_nimetus"]);
-            }
-            foreach (DataRow item in dt_toode.Rows)
-                table.Rows.Add(item["Toodenimetus"], item["Kogus"], item["Hind"], item["Pilt"]);
-            //for (int i = 0; i < dgv.Rows.Count; i++)
-            //{
-            //    dgv.Rows[i].Cells["Kategooria"].Value = (dgvcb.Items[0] as
-            //    DataRowView).Row[1].ToString();
-            //}
-            dgv.DataSource = table;
-            dgv.Columns.Add(dgvcb);
+            dgv.DataSource = dt_toode;
             connect.Close();
         }
 

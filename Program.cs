@@ -11,7 +11,12 @@ namespace ToodedAB
         [STAThread]
         static void Main()
         {
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
             Application.Run(new ToodedAB());
+        }
+
+        static void MyHandler(object sender, UnhandledExceptionEventArgs args)
+        {
         }
     }
 }
