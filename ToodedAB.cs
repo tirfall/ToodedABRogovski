@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,14 +16,15 @@ namespace ToodedAB
 {
     public partial class ToodedAB : Form
     {
-        
+
         SqlConnection connect = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\AppData\Tooded_DB.mdf;Integrated Security=True");
         SqlDataAdapter adapter_toode, adapter_kategooria;
         SqlCommand command;
-        ComboBox cb1, cb2, cb3, cb4, cb5;
+        ComboBox cb1, cb4, cb5;
+        TextBox cb2,cb3;
         Label lb1, lb2, lb3, lb4, lb5;
         Button btn1, btn2, btn3, btn4, btn5, btn6;
-        Dictionary<string,int> kategooria;
+        Dictionary<string, int> kategooria;
         Dictionary<int, string> kategooriaRev;
         int SelectId;
         PictureBox pb;
@@ -36,14 +37,14 @@ namespace ToodedAB
             lb1 = new Label() { Text = "Toode nimetus", Location = new Point(20, 20), Font = new Font("Arial", 16), ForeColor = Color.Black, Size=new Size(150, 30) };
             lb2 = new Label() { Text = "Kogus", Location = new Point(20, lb1.Location.Y+40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size=new Size(150, 30) };
             lb3 = new Label() { Text = "Hind", Location = new Point(20, lb2.Location.Y+ 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size=new Size(150, 30) };
-            lb4 = new Label() { Text = "Kategooria", Location = new Point(20,lb3.Location.Y+ 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size=new Size(150,30)};
+            lb4 = new Label() { Text = "Kategooria", Location = new Point(20, lb3.Location.Y+ 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size=new Size(150, 30) };
             lb5 = new Label() { Text = "Pilt", Location = new Point(20, lb4.Location.Y + 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
-            cb1 = new ComboBox() { Location = new Point(lb1.Right+20,lb1.Location.Y), Font = new Font("Arial", 15) };
-            cb2 = new ComboBox() { Location = new Point(lb2.Right+20, lb2.Location.Y), Font = new Font("Arial", 15) };
-            cb3 = new ComboBox() { Location = new Point(lb3.Right+20, lb3.Location.Y), Font = new Font("Arial", 15) };
+            cb1 = new ComboBox() { Location = new Point(lb1.Right+20, lb1.Location.Y), Font = new Font("Arial", 15) };
+            cb2 = new TextBox() { Location = new Point(lb2.Right+20, lb2.Location.Y), Font = new Font("Arial", 15), Size = cb1.Size };
+            cb3 = new TextBox() { Location = new Point(lb3.Right+20, lb3.Location.Y), Font = new Font("Arial", 15), Size = cb1.Size };
             cb4 = new ComboBox() { Location = new Point(lb5.Right + 20, lb5.Location.Y), Font = new Font("Arial", 15) };
             cb5 = new ComboBox() { Location = new Point(lb4.Right+20, lb4.Location.Y), Font = new Font("Arial", 15) };
-            btn1 = new Button() { Text = "Lisa kategooria", Location = new Point(lb5.Left, lb5.Bottom+15), Size = new Size(120,20), FlatStyle = FlatStyle.Popup };
+            btn1 = new Button() { Text = "Lisa kategooria", Location = new Point(lb5.Left, lb5.Bottom+15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
             btn1.Click +=Btn1_Click;
             btn2 = new Button() { Text = "Kustuta kategooria", Location = new Point(btn1.Right+5, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
             btn2.Click += Btn2_Click;
@@ -55,29 +56,29 @@ namespace ToodedAB
             btn5.Click += Btn5_Click;
             btn6 = new Button() { Text = "Kustuta", Location = new Point(btn5.Right + 15, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
             btn6.Click += Btn6_Click;
-            pb = new PictureBox() { Location = new Point(btn5.Right-btn5.Width/2,cb1.Top-10),Size = new Size(200,200), BackColor=Color.Gray};
-            ofd = new OpenFileDialog(){ FileName = "Valige pildifail",Multiselect=true,InitialDirectory=Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),Title = "Avage pildifail",Filter = "Image Files|*.jpeg; *.jpg; *.gif; *.bmp; *.png; *.tiff; *.icon; *.emf; *.wmf"};
-            save = new SaveFileDialog() {  InitialDirectory=Path.GetFullPath(@"..\..\Images") };
+            pb = new PictureBox() { Location = new Point(btn5.Right-btn5.Width/2, cb1.Top-10), Size = new Size(200, 200), BackColor=Color.Gray };
+            ofd = new OpenFileDialog() { FileName = "Valige pildifail", Multiselect=true, InitialDirectory=Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Title = "Avage pildifail", Filter = "Image Files|*.jpeg; *.jpg; *.gif; *.bmp; *.png; *.tiff; *.icon; *.emf; *.wmf" };
+            save = new SaveFileDialog() { InitialDirectory=Path.GetFullPath(@"..\..\Images") };
             dgv.CellClick +=Dgv_CellClick;
             cb1.SelectedValueChanged+=Cb_SelectedValueChanged;
-            this.Controls.AddRange(new Control[] {lb1,lb2,lb3,lb4,lb5,cb1,cb2,cb3,cb4,cb5,btn1,btn2,btn3,btn4,btn5,btn6, pb});
+            this.Controls.AddRange(new Control[] { lb1, lb2, lb3, lb4, lb5, cb1, cb2, cb3, cb4, cb5, btn1, btn2, btn3, btn4, btn5, btn6, pb });
             Naita();
         }
 
         private void Cb_SelectedValueChanged(object sender, EventArgs e)
         {
             int id = cb1.SelectedIndex;
-            cb2.SelectedIndex = id;
-            cb3.SelectedIndex = id;
             cb4.SelectedIndex = id;
             connect.Open();
-            adapter_toode = new SqlDataAdapter($"SELECT Id,Kategooriad FROM Toodetable WHERE Toodenimetus='{cb1.Text}'", connect);
+            adapter_toode = new SqlDataAdapter($"SELECT Id,Kategooriad,Kogus,Hind FROM Toodetable WHERE Toodenimetus='{cb1.Text}'", connect);
             DataTable dt_kat = new DataTable();
             adapter_toode.Fill(dt_kat);
             foreach (DataRow item in dt_kat.Rows)
             {
                 cb5.Text = kategooriaRev[Convert.ToInt32(item["Kategooriad"])];
                 SelectId = Convert.ToInt32(item["Id"]);
+                cb2.Text = item["Kogus"].ToString();
+                cb3.Text = item["Hind"].ToString();
             }
             connect.Close();
         }
@@ -95,7 +96,7 @@ namespace ToodedAB
         private void Dgv_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int i = 0;
-            foreach (ComboBox item in new ComboBox[] { cb1, cb2, cb3, cb4, cb5 })
+            foreach (Control item in new Control[] { cb1, cb2, cb3, cb4, cb5 })
             {
                 item.Text = dgv.Rows[e.RowIndex].Cells[i].Value.ToString();
                 i++;
@@ -125,7 +126,7 @@ namespace ToodedAB
             connect.Open();
             command.Parameters.AddWithValue("@nim", cb1.Text);
             command.Parameters.AddWithValue("@kogus", cb2.Text);
-            command.Parameters.AddWithValue("@hind",Convert.ToDouble(cb3.Text));
+            command.Parameters.AddWithValue("@hind", Convert.ToDouble(cb3.Text));
             command.Parameters.AddWithValue("@kat", kategooria[cb5.Text]);
             int i = kategooria[cb5.Text];
             command.Parameters.AddWithValue("@img", cb4.Text);
@@ -212,12 +213,12 @@ namespace ToodedAB
         private void NaitaRows()
         {
             connect.Open();
-            adapter_toode = new SqlDataAdapter("SELECT Toodenimetus,Kogus,Hind,Pilt FROM Toodetable", connect);
+            adapter_toode = new SqlDataAdapter("SELECT Toodenimetus,Pilt FROM Toodetable", connect);
             DataTable dt_kat = new DataTable();
             adapter_toode.Fill(dt_kat);
-            List<string> list = new List<string>() { "Toodenimetus", "Kogus", "Hind", "Pilt" };
+            List<string> list = new List<string>() { "Toodenimetus", "Pilt" };
             int i = 0;
-            foreach (ComboBox item in new ComboBox[] { cb1, cb2, cb3, cb4 })
+            foreach (ComboBox item in new ComboBox[] { cb1, cb4 })
             {
                 foreach (DataRow item1 in dt_kat.Rows)
                 {
@@ -257,11 +258,13 @@ namespace ToodedAB
 
         private void Naita()
         {
-            foreach (ComboBox item in new ComboBox[] { cb1,cb2,cb3,cb4,cb5 })
+            foreach (ComboBox item in new ComboBox[] { cb1, cb4, cb5 })
             {
                 item.Items.Clear();
                 item.Text = "";
             }
+            cb2.Text = "";
+            cb3.Text = "";
             NaitaKategooriad();
             NaitaAndmed();
             NaitaRows();
@@ -276,10 +279,10 @@ namespace ToodedAB
                 foreach (FileInfo fi in Di.GetFiles())
                 {
                     s=fi.Name+"\r\n";
-                    if (s.ToLower().Contains(cb1.Text.ToLower()) || s.ToLower().Contains(cb5.Text.ToLower()))
+                    if (s.ToLower().Contains(cb1.Text.ToLower()) || s.ToLower().Contains(cb4.Text.ToLower()))
                         break;
                 }
-                if (!s.ToLower().Contains(cb1.Text.ToLower()) && !s.ToLower().Contains(cb5.Text.ToLower()))
+                if (!s.ToLower().Contains(cb1.Text.ToLower()) && !s.ToLower().Contains(cb4.Text.ToLower()))
                 {
                     pb.Image = null;
                     s="";
@@ -290,6 +293,30 @@ namespace ToodedAB
                 pb.SizeMode = PictureBoxSizeMode.Zoom;
             }
             catch { }
+        }
+
+        private bool ControlInsert()
+        {
+            foreach (Control item in new Control[] {cb1,cb2,cb3,cb4,cb5 })
+                item.BackColor = Color.White;
+            List<bool> b = new List<bool>();
+            if (cb1.Items.Contains(cb1.Text) || cb1.Text=="" || cb1.Text.Length<3)
+            {
+                b.Add(false);
+                cb1.BackColor= Color.Red;
+            }
+            int num1;
+            try
+            {
+                num1 = Convert.ToInt32(cb2.Text);
+                if (num1<0)
+                {
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return !b.Any(c => c == false);
         }
     }
 }
