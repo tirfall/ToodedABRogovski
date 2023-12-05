@@ -29,6 +29,7 @@ namespace ToodedAB
         PictureBox pb;
         OpenFileDialog ofd;
         SaveFileDialog save;
+        string s;
         public ToodedAB()
         {
             InitializeComponent();
@@ -61,7 +62,6 @@ namespace ToodedAB
             cb1.SelectedValueChanged+=Cb_SelectedValueChanged;
             this.Controls.AddRange(new Control[] {lb1,lb2,lb3,lb4,lb5,cb1,cb2,cb3,cb4,cb5,btn1,btn2,btn3,btn4,btn5,btn6, pb});
             Naita();
-
         }
 
         private void Cb_SelectedValueChanged(object sender, EventArgs e)
@@ -100,17 +100,7 @@ namespace ToodedAB
                 item.Text = dgv.Rows[e.RowIndex].Cells[i].Value.ToString();
                 i++;
             }
-            try
-            {
-                foreach (var item in new string[] {".jpeg", ".jpg", ".gif", ".bmp", ".png", ".tiff", ".icon", ".emf", ".wmf"})
-                { 
-                    pb.ImageLocation = "Images\\"+cb1.Text.ToLower()+item;
-                    pb.Load();
-                }
-            }
-            catch (Exception)
-            { 
-            }
+            NaitaPilt();
         }
 
         private void Btn5_Click(object sender, EventArgs e)
@@ -157,6 +147,15 @@ namespace ToodedAB
                     if (save.ShowDialog()==DialogResult.OK)
                     {
                         File.Copy(ofd.FileName, save.FileName);
+                        string[] strings = save.FileName.Split('\\');
+                        string name = strings[strings.Count()-1];
+                        int num = SelectId;
+                        command = new SqlCommand("UPDATE Toodetable SET Pilt=@img WHERE Id=@id", connect);
+                        connect.Open();
+                        command.Parameters.AddWithValue("@id", num);
+                        command.Parameters.AddWithValue("@img", name);
+                        command.ExecuteNonQuery();
+                        connect.Close();
                     }
                 }
             }
@@ -178,7 +177,7 @@ namespace ToodedAB
             command.Parameters.AddWithValue("@kat", cb5.Text);
             command.ExecuteNonQuery();
             connect.Close();
-            NaitaKategooriad();
+            Naita();
         }
 
         private void NaitaKategooriad()
@@ -231,34 +230,28 @@ namespace ToodedAB
 
         private void NaitaAndmed()
         {
-            //connect.Open();
-            //DataTable dt_toode = new DataTable();
-            //DataTable table = new DataTable();
-            //adapter_toode = new SqlDataAdapter("SELECT Toodetable.Toodenimetus,Toodetable.Kogus,Toodetable.Hind,Toodetable.Pilt,Kategooria.Kategooria_nimetus FROM Toodetable INNER JOIN Kategooria ON Toodetable.Kategooriad = Kategooria.Id;", connect);
-            //adapter_toode.Fill(dt_toode);
-            //table.Columns.Add("Nimetus");
-            //table.Columns.Add("Kogus");
-            //table.Columns.Add("Hind");
-            //table.Columns.Add("Pilt");
-            //DataGridViewComboBoxColumn dgvcb = new DataGridViewComboBoxColumn();
-            //dgvcb.HeaderText= "Kategooria";
-            //foreach (DataRow item in dt_toode.Rows)
-            //{
-            //    if (!dgvcb.Items.Contains(item["Kategooria_nimetus"]))
-            //        dgvcb.Items.Add(item["Kategooria_nimetus"]);
-            //}
-            //foreach (DataRow item in dt_toode.Rows)
-            //    table.Rows.Add(item["Toodenimetus"], item["Kogus"], item["Hind"], item["Pilt"]);
-            //dgv.Columns.Add(dgvcb);
-            //dgv.Rows.Add(dgvcb.Items[0]);
-            //dgv.DataSource = table;
-            //connect.Close();
-
             connect.Open();
             DataTable dt_toode = new DataTable();
             adapter_toode = new SqlDataAdapter("SELECT Toodetable.Toodenimetus,Toodetable.Kogus,Toodetable.Hind,Toodetable.Pilt,Kategooria.Kategooria_nimetus FROM Toodetable INNER JOIN Kategooria ON Toodetable.Kategooriad = Kategooria.Id;", connect);
             adapter_toode.Fill(dt_toode);
+            dgv.DataSource = null;
             dgv.DataSource = dt_toode;
+            DataGridViewComboBoxColumn dgvcb = new DataGridViewComboBoxColumn();
+            dgvcb.HeaderText= "Kategooria";
+            dgvcb.Name = "KategooriaColumn";
+            dgvcb.DataPropertyName= "Kategooria_nimetus";
+            HashSet<string> list = new HashSet<string>();
+            foreach (DataRow item in dt_toode.Rows)
+            {
+                string cat = item["Kategooria_nimetus"].ToString();
+                if (!list.Contains(cat))
+                {
+                    list.Add(cat);
+                    dgvcb.Items.Add(cat);
+                }
+            }
+            dgv.Columns.Add(dgvcb);
+            dgv.Columns["Kategooria_nimetus"].Visible = false;
             connect.Close();
         }
 
@@ -272,6 +265,31 @@ namespace ToodedAB
             NaitaKategooriad();
             NaitaAndmed();
             NaitaRows();
+            NaitaPilt();
+        }
+
+        private void NaitaPilt()
+        {
+            try
+            {
+                DirectoryInfo Di = new DirectoryInfo(save.InitialDirectory);
+                foreach (FileInfo fi in Di.GetFiles())
+                {
+                    s=fi.Name+"\r\n";
+                    if (s.ToLower().Contains(cb1.Text.ToLower()) || s.ToLower().Contains(cb5.Text.ToLower()))
+                        break;
+                }
+                if (!s.ToLower().Contains(cb1.Text.ToLower()) && !s.ToLower().Contains(cb5.Text.ToLower()))
+                {
+                    pb.Image = null;
+                    s="";
+                    return;
+                }
+                pb.ImageLocation = save.InitialDirectory+"\\"+s;
+                pb.Load();
+                pb.SizeMode = PictureBoxSizeMode.Zoom;
+            }
+            catch { }
         }
     }
 }
