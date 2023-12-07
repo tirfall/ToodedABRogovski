@@ -61,16 +61,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Settings.Designer.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Main.Designer.cs">
+      <DependentUpon>Main.cs</DependentUpon>
+    </Compile>
     <Compile Include="Pood.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Pood.Designer.cs">
       <DependentUpon>Pood.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ToodedAB.cs">
       <SubType>Form</SubType>
@@ -86,7 +93,6 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -109,6 +115,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>Tooded_DB.mdf</DependentUpon>
     </Content>
+    <None Include="Resources\sound3.png" />
+    <None Include="Resources\sound2.png" />
+    <None Include="Resources\sound.png" />
+    <None Include="Resources\sound1.png" />
+    <None Include="Resources\house1.png" />
+    <None Include="Resources\house.png" />
+    <None Include="Resources\set1.png" />
+    <None Include="Resources\set2.png" />
+    <None Include="Resources\set3.png" />
+    <None Include="Resources\set.png" />
     <None Include="Resources\cart2.png" />
     <None Include="Resources\cart1.png" />
     <None Include="Resources\cart6.png" />
@@ -117,7 +133,6 @@
     <None Include="Resources\cart3.png" />
     <None Include="Resources\cart.png" />
     <None Include="Resources\bg.jpg" />
-    <None Include="Resources\Back.jpg" />
     <None Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -133,7 +148,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Elements\" />
     <Folder Include="Images\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
