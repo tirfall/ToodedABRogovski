@@ -42,13 +42,14 @@ namespace ToodedAB
             this.dgv.Size = new System.Drawing.Size(936, 223);
             this.dgv.TabIndex = 0;
             // 
-            // Form1
+            // ToodedAB
             // 
             this.ClientSize = new System.Drawing.Size(960, 510);
             this.Controls.Add(this.dgv);
-            this.Name = "Form1";
+            this.Name = "ToodedAB";
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).EndInit();
             this.ResumeLayout(false);
+
         }
 
         #endregion

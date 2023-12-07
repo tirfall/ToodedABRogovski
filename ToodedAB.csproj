@@ -61,6 +61,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Pood.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Pood.Designer.cs">
+      <DependentUpon>Pood.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ToodedAB.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,13 +85,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -102,6 +109,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>Tooded_DB.mdf</DependentUpon>
     </Content>
+    <None Include="Resources\cart2.png" />
+    <None Include="Resources\cart1.png" />
+    <None Include="Resources\cart6.png" />
+    <None Include="Resources\cart5.png" />
+    <None Include="Resources\cart4.png" />
+    <None Include="Resources\cart3.png" />
+    <None Include="Resources\cart.png" />
+    <None Include="Resources\bg.jpg" />
+    <None Include="Resources\Back.jpg" />
+    <None Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
@@ -116,6 +133,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Elements\" />
     <Folder Include="Images\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -83,6 +83,11 @@ namespace ToodedAB
             connect.Close();
         }
 
+        private void ToodedAB_Load(object sender, EventArgs e)
+        {
+
+        }
+
         private void Btn6_Click(object sender, EventArgs e)
         {
             command = new SqlCommand("DELETE FROM Toodetable WHERE Toodenimetus=@nimi", connect);

@@ -49,3 +49,15 @@ C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (3)\obj\Debug\Tood
 C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (3)\obj\Debug\ToodedAB.csproj.CoreCompileInputs.cache
 C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (3)\obj\Debug\ToodedAB.exe
 C:\Users\opilane\source\repos\TimurDenisenkoTARpv22\Uus kaust (3)\obj\Debug\ToodedAB.pdb
+C:\Users\37256\source\repos\ToodedAB 1\bin\Debug\AppData\Tooded_DB.mdf
+C:\Users\37256\source\repos\ToodedAB 1\bin\Debug\AppData\Tooded_DB_log.ldf
+C:\Users\37256\source\repos\ToodedAB 1\bin\Debug\ToodedAB.exe.config
+C:\Users\37256\source\repos\ToodedAB 1\bin\Debug\ToodedAB.exe
+C:\Users\37256\source\repos\ToodedAB 1\bin\Debug\ToodedAB.pdb
+C:\Users\37256\source\repos\ToodedAB 1\obj\Debug\ToodedAB.csproj.AssemblyReference.cache
+C:\Users\37256\source\repos\ToodedAB 1\obj\Debug\ToodedAB.ToodedAB.resources
+C:\Users\37256\source\repos\ToodedAB 1\obj\Debug\ToodedAB.Properties.Resources.resources
+C:\Users\37256\source\repos\ToodedAB 1\obj\Debug\ToodedAB.csproj.GenerateResource.cache
+C:\Users\37256\source\repos\ToodedAB 1\obj\Debug\ToodedAB.csproj.CoreCompileInputs.cache
+C:\Users\37256\source\repos\ToodedAB 1\obj\Debug\ToodedAB.exe
+C:\Users\37256\source\repos\ToodedAB 1\obj\Debug\ToodedAB.pdb
