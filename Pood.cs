@@ -15,6 +15,7 @@ namespace ToodedAB
         Button start, setting, exit;
         Settings settings;
         Main main;
+        Sound s;
         public Pood()
         {
             this.Width = 1200;
@@ -39,11 +40,15 @@ namespace ToodedAB
             start.MouseClick+=Start_MouseClick;
             setting.MouseClick+=Setting_MouseClick;
 
+            s = new Sound();
+            s.Music();
+
             Controls.AddRange(new Control[] { title, start, setting, exit });
         }
 
         private void Setting_MouseClick(object sender, MouseEventArgs e)
         {
+            s.StopMusic(s.waveOut);
             this.Hide();
             settings = new Settings();
             settings.Closed += (s, args) => this.Close();
