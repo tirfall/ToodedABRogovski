@@ -14,12 +14,16 @@ namespace ToodedAB
 {
     public partial class Settings : Form
     {
+        ToodedAB tab;
         Pood pood;
-        Label home, sound, account, lsound;
+        Label home, sound, account, lsound, login, fpass,reg;
+        TextBox username, password;
+        Button sisse;
         Bitmap bmp, soundbmp;
         TrackBar tbsound;
-        UserControl uc;
+        UserControl uc, uc1;
         Sound s,sE;
+        bool lbclick, pbclick = false;
         public Settings()
         {
             this.Width = 1200;
@@ -52,12 +56,145 @@ namespace ToodedAB
             tbsound.ValueChanged += Tb_ValueChanged;
             Tb_ValueChanged(new object(), new EventArgs());
 
+            uc = new UserControl() { BorderStyle = BorderStyle.Fixed3D, Size= new Size((Width-home.Right-100),(home.Top+account.Bottom)), Location = new Point(home.Right+50,home.Top), BackColor = Color.Transparent, Visible = false };
+            uc1 = new UserControl() { Size = new Size((uc.Width/5)*3, (uc.Height / 5) * 4), Location = new Point(uc.Width/5, (uc.Height-(uc.Height / 5) * 4)/2), BackColor = Color.White };
+            uc.Controls.Add(uc1);
+
+            login = new Label() { Text = "Logi sisse", Font = new Font("Arial",30), Location = new Point(uc1.Width/2-100,30), AutoSize = true };
+
+            username = new TextBox() { Text = "Isikukood või nimi...", Font = new Font("Arial",30), Size=new Size(uc1.Width-60,20),Location = new Point(30,login.Bottom+100),TextAlign=HorizontalAlignment.Center,ForeColor=Color.Gray, MaxLength=20 };
+            username.MouseHover += Username_MouseHover;
+            username.MouseClick += Username_MouseClick;
+
+            password = new TextBox() { Text = "Parool...", Font = new Font("Arial", 30), Size = username.Size, Location = new Point(30, username.Bottom + 70), TextAlign = HorizontalAlignment.Center, ForeColor = Color.Gray, MaxLength = 20 };
+            password.MouseHover += password_MouseHover;
+            password.MouseClick += password_MouseClick;
+
+            sisse = new Button() { Text = "Sisse", Font = new Font("Arial", 30), Size = username.Size, Location = new Point(password.Left,uc1.Height-70),TextAlign=ContentAlignment.MiddleCenter };
+            sisse.Click += Sisse_Click;
+
+            fpass = new Label() { Text = "Unustasin parooli", Font = new Font("Arial", 15), AutoSize = true, Location = new Point(password.Left, sisse.Top-30), ForeColor = Color.Gray };
+            fpass.MouseHover += Fpass_MouseHover;
+            fpass.MouseLeave += Fpass_MouseLeave;
+
+            reg = new Label() { Text = "Registreeri", Font = new Font("Arial", 15), AutoSize = true, Location = new Point(password.Right - 100, sisse.Top - 30), ForeColor = Color.Gray };
+            reg.MouseHover += reg_MouseHover;
+            reg.MouseLeave += reg_MouseLeave;
+
+            uc1.Controls.AddRange(new Control[] { login,username, password, fpass,reg,sisse });
+
             sE = new Sound();
             s = new Sound();
             s.Music();
 
-            Controls.AddRange(new Control[] { home,sound, tbsound, account, lsound });
+            Controls.AddRange(new Control[] { home,sound, tbsound, account, lsound,uc });
 
+        }
+
+        private void Sisse_Click(object sender, EventArgs e)
+        {
+            if (username.Text=="@root" && password.Text=="12345")
+            {
+                sE.Effect(Properties.Resources.click);
+                sE.Stop();
+                s.Stop();
+                this.Hide();
+                tab = new ToodedAB();
+                tab.Closed += (s, args) => this.Close();
+                tab.Show();
+            }
+        }
+
+        private void reg_MouseHover(object sender, EventArgs e)
+        {
+            reg.ForeColor = Color.Blue;
+            reg.Font = new Font("Arial", 15, FontStyle.Underline);
+        }
+
+        private void reg_MouseLeave(object sender, EventArgs e)
+        {
+            reg.ForeColor = Color.Gray;
+            reg.Font = new Font("Arial", 15);
+        }
+
+        private void Fpass_MouseLeave(object sender, EventArgs e)
+        {
+            fpass.ForeColor = Color.Gray;
+            fpass.Font = new Font("Arial", 15);
+        }
+
+        private void Fpass_MouseHover(object sender, EventArgs e)
+        {
+            fpass.ForeColor = Color.Blue;
+            fpass.Font = new Font("Arial", 15, FontStyle.Underline);
+        }
+
+        private async void password_MouseClick(object sender, MouseEventArgs e)
+        {
+            password.MouseHover -= password_MouseHover;
+            pbclick = true;
+            await Task.Run(() =>
+            {
+                while (password.Text.Contains("Parool"))
+                {
+                    Invoke((MethodInvoker)delegate { password.Text = ""; });
+                }
+            });
+            password.ForeColor = Color.Black;
+            await Task.Delay(1000);
+            password.UseSystemPasswordChar = true;
+        }
+
+        private async void password_MouseHover(object sender, EventArgs e)
+        {
+            do
+            {
+                foreach (string item in new string[] { "Parool.", "Parool..", "Parool..." })
+                {
+                    password.Text = item; 
+                    if (pbclick)
+                        return;
+                    await Task.Delay(500);
+                    if (!password.ClientRectangle.Contains(password.PointToClient(Cursor.Position)))
+                        break;
+                    if (pbclick)
+                        return;
+                }
+            } while (password.ClientRectangle.Contains(password.PointToClient(Cursor.Position)));
+            password.Text = "Parool...";
+        }
+
+        private async void Username_MouseClick(object sender, MouseEventArgs e)
+        {
+            username.MouseHover -= Username_MouseHover;
+            lbclick = true;
+            await Task.Run(() =>
+            {
+                while (username.Text.Contains("Isikukood või nimi"))
+                {
+                    Invoke((MethodInvoker)delegate { username.Text = ""; });
+                }
+            });
+            username.ForeColor = Color.Black;
+        }
+
+        private async void Username_MouseHover(object sender, EventArgs e)
+        {
+            do
+            {
+                foreach (string item in new string[]{ "Isikukood või nimi.", "Isikukood või nimi..", "Isikukood või nimi..." })
+                {
+                    username.Text = item;
+                    if (pbclick)
+                        return;
+                    await Task.Delay(500);
+                    if (!username.ClientRectangle.Contains(username.PointToClient(Cursor.Position)))
+                        break;
+                    if (lbclick)
+                        return;
+                }
+            } while (username.ClientRectangle.Contains(username.PointToClient(Cursor.Position)));
+            username.Text = "Isikukood või nimi...";
         }
 
         private void Account_MouseLeave(object sender, EventArgs e)
@@ -70,7 +207,15 @@ namespace ToodedAB
         private void Account_MouseClick(object sender, MouseEventArgs e)
         {
             sE.Effect(Properties.Resources.click);
-            throw new NotImplementedException();
+            switch (uc.Visible)
+            {
+                case true:
+                    uc.Visible = false; break;
+                case false:
+                    uc.Visible = true;
+                    tbsound.Visible = false;
+                    lsound.Visible = false; break;
+            }
         }
 
         private void Account_MouseHover(object sender, EventArgs e)
@@ -107,6 +252,7 @@ namespace ToodedAB
                 case false:
                     tbsound.Visible = true;
                     lsound.Visible = true;
+                    uc.Visible = false;
                     break;
             }
         }
