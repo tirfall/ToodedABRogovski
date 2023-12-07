@@ -15,15 +15,16 @@ namespace ToodedAB
     public partial class Settings : Form
     {
         Pood pood;
-        Label home, sound, account, lsound, lmusic;
+        Label home, sound, account, lsound;
         Bitmap bmp, soundbmp;
-        TrackBar tbsound, tbmusic;
+        TrackBar tbsound;
         UserControl uc;
+        Sound s,sE;
         public Settings()
         {
             this.Width = 1200;
             this.Height = 900;
-            this.Text = "VS Pood | Vihane Sipelgas";
+            this.Text = "VS Pood | Vihane Sipelgas Sätted";
             this.BackgroundImage = Properties.Resources.bg;
             this.Icon = Properties.Resources.Icon;
 
@@ -44,44 +45,31 @@ namespace ToodedAB
             account.MouseClick += Account_MouseClick;
             account.MouseLeave += Account_MouseLeave;
 
-            lsound = new Label() { Text = "Heli", Font = new Font("Arial", 15), Location = new Point(home.Left + 400, home.Location.Y), Visible = false };
-            lmusic = new Label() { Text = "Muusik", Font = new Font("Arial", 15), Location = new Point(home.Left + 600 + lsound.Width, home.Location.Y), Visible = false };
+            lsound = new Label() { Text = "Heli", Font = new Font("Arial", 15), Location = new Point(home.Left + 400, sound.Top), Visible = false,Width=200 };
 
             tbsound = new TrackBar() { Maximum = 100, Minimum = 0, AutoSize=false,Height = 200,Width=30, Location = new Point(lsound.Left,lsound.Bottom), 
                 Value = Convert.ToInt32(Properties.Settings.Default.SoundValue), Visible = false, Orientation=Orientation.Vertical};
             tbsound.ValueChanged += Tb_ValueChanged;
-            tbmusic = new TrackBar() { Maximum = 100, Minimum = 0,AutoSize = false, Height=200,Width = 30,Location = new Point(lmusic.Left, lmusic.Bottom), 
-                Value = Convert.ToInt32(Properties.Settings.Default.MusicValue), Visible = false,Orientation = Orientation.Vertical};
-            tbmusic.ValueChanged += Tbmusic_ValueChanged;
             Tb_ValueChanged(new object(), new EventArgs());
 
-            Controls.AddRange(new Control[] { home,sound, tbsound, account, tbmusic, lsound, lmusic });
+            sE = new Sound();
+            s = new Sound();
+            s.Music();
 
-        }
+            Controls.AddRange(new Control[] { home,sound, tbsound, account, lsound });
 
-        private void Tbmusic_ValueChanged(object sender, EventArgs e)
-        {
-            if (tbsound.Value >= 70 && tbmusic.Value >= 70)
-                soundbmp = new Bitmap(Properties.Resources.sound, 200, 200);
-            else if (tbsound.Value >= 40 && tbmusic.Value >= 40)
-                soundbmp = new Bitmap(Properties.Resources.sound3, 200, 200);
-            else if (tbsound.Value >= 1 && tbmusic.Value >= 1)
-                soundbmp = new Bitmap(Properties.Resources.sound2, 200, 200);
-            else if (tbsound.Value == 0 && tbmusic.Value == 0)
-                soundbmp = new Bitmap(Properties.Resources.sound1, 200, 200);
-            sound.Image = soundbmp;
-            Properties.Settings.Default.MusicValue = tbmusic.Value;
-            Properties.Settings.Default.Save();
         }
 
         private void Account_MouseLeave(object sender, EventArgs e)
         {
             bmp = new Bitmap(Properties.Resources.account, 200, 200);
             account.Image = bmp;
+            sE.Stop();
         }
 
         private void Account_MouseClick(object sender, MouseEventArgs e)
         {
+            sE.Effect(Properties.Resources.click);
             throw new NotImplementedException();
         }
 
@@ -89,17 +77,18 @@ namespace ToodedAB
         {
             bmp = new Bitmap(Properties.Resources.account1, 200, 200);
             account.Image = bmp;
+            sE.Effect(Properties.Resources.acc);
         }
 
         private void Tb_ValueChanged(object sender, EventArgs e)
         {
-            if (tbsound.Value >= 70 && tbmusic.Value >= 70)
+            if (tbsound.Value >= 70)
                 soundbmp = new Bitmap(Properties.Resources.sound, 200, 200);
-            else if (tbsound.Value >= 40 && tbmusic.Value >= 40)
+            else if (tbsound.Value >= 40)
                 soundbmp = new Bitmap(Properties.Resources.sound3, 200, 200);
-            else if (tbsound.Value >= 1 && tbmusic.Value >= 1)
+            else if (tbsound.Value >= 1)
                 soundbmp = new Bitmap(Properties.Resources.sound2, 200, 200);
-            else if (tbsound.Value == 0 && tbmusic.Value == 0)
+            else if (tbsound.Value == 0)
                 soundbmp = new Bitmap(Properties.Resources.sound1, 200, 200);
             sound.Image = soundbmp;
             Properties.Settings.Default.SoundValue = tbsound.Value;
@@ -108,19 +97,16 @@ namespace ToodedAB
 
         private void Sound_MouseClick(object sender, MouseEventArgs e)
         {
+            sE.Effect(Properties.Resources.click);
             switch (tbsound.Visible)
             {
                 case true:
                     tbsound.Visible = false; 
-                    tbmusic.Visible = false;
                     lsound.Visible = false;
-                    lmusic.Visible = false;
                     break;
                 case false:
                     tbsound.Visible = true;
-                    tbmusic.Visible = true;
                     lsound.Visible = true;
-                    lmusic.Visible = true;
                     break;
             }
         }
@@ -129,6 +115,7 @@ namespace ToodedAB
         {
             do
             {
+                sE.Effect(Properties.Resources.volume);
                 foreach (Image item in new Image[] { Properties.Resources.sound1, Properties.Resources.sound2, Properties.Resources.sound3, Properties.Resources.sound })
                 {
                     bmp = new Bitmap(item, 200, 200);
@@ -139,10 +126,14 @@ namespace ToodedAB
                 }
             } while (sound.ClientRectangle.Contains(sound.PointToClient(Cursor.Position)));
             sound.Image = soundbmp;
+            sE.Stop();
         }
 
         private void Home_MouseClick(object sender, MouseEventArgs e)
         {
+            sE.Effect(Properties.Resources.click);
+            sE.Stop();
+            s.Stop();
             this.Hide();
             pood = new Pood();
             pood.Closed += (s, args) => this.Close();
@@ -153,12 +144,14 @@ namespace ToodedAB
         {
             Bitmap bmp = new Bitmap(Properties.Resources.house, 200, 200);
             home.Image = bmp;
+            sE.Stop();
         }
 
         private void Home_MouseHover(object sender, EventArgs e)
         {
             Bitmap bmp = new Bitmap(Properties.Resources.house1, 200, 200);
             home.Image = bmp;
+            sE.Effect(Properties.Resources.light);
         }
     }
 }

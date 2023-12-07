@@ -14,7 +14,7 @@ namespace ToodedAB
         {
             this.Width = 1200;
             this.Height = 900;
-            this.Text = "VS Pood | Vihane Sipelgas";
+            this.Text = "VS Pood | Vihane Sipelgas Logi Sisse";
             this.BackgroundImage = Properties.Resources.bg;
             this.Icon = Properties.Resources.Icon;
         }

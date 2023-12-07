@@ -15,12 +15,12 @@ namespace ToodedAB
         Button start, setting, exit;
         Settings settings;
         Main main;
-        Sound s;
+        Sound s, sE;
         public Pood()
         {
             this.Width = 1200;
             this.Height = 900;
-            this.Text = "VS Pood | Vihane Sipelgas";
+            this.Text = "VS Pood | Vihane Sipelgas Peamenüü";
             this.BackgroundImage = Properties.Resources.bg;
             this.Icon = Properties.Resources.Icon;
             title = new Label() { Font = new Font("Times New Roman", 60, FontStyle.Italic), Text = "Vihane Sipelgas", AutoSize = true, BackColor = Color.Transparent, 
@@ -40,6 +40,7 @@ namespace ToodedAB
             start.MouseClick+=Start_MouseClick;
             setting.MouseClick+=Setting_MouseClick;
 
+            sE = new Sound();
             s = new Sound();
             s.Music();
 
@@ -48,7 +49,9 @@ namespace ToodedAB
 
         private void Setting_MouseClick(object sender, MouseEventArgs e)
         {
-            s.StopMusic(s.waveOut);
+            sE.Effect(Properties.Resources.click);
+            sE.Stop();
+            s.Stop();
             this.Hide();
             settings = new Settings();
             settings.Closed += (s, args) => this.Close();
@@ -57,6 +60,7 @@ namespace ToodedAB
 
         private void Start_MouseClick(object sender, MouseEventArgs e)
         {
+            sE.Effect(Properties.Resources.click);
             this.Hide();
             main = new Main();
             main.Closed += (s, args) => this.Close();
@@ -65,6 +69,7 @@ namespace ToodedAB
 
         private void Exit_MouseClick(object sender, MouseEventArgs e)
         {
+            sE.Effect(Properties.Resources.click);
             Close();
         }
 
@@ -72,6 +77,7 @@ namespace ToodedAB
         {
             do
             {
+                sE.Effect(Properties.Resources.text);
                 exit.Text = "";
                 foreach (string item in new string[] { " E ", " X ", " I ", " T " })
                 {
@@ -83,12 +89,14 @@ namespace ToodedAB
                 }
             } while (exit.ClientRectangle.Contains(exit.PointToClient(Cursor.Position)));
             exit.Text = "EXIT";
+            sE.Stop();
         }
 
         private async void Setting_MouseHover(object sender, EventArgs e)
         {
             do
             {
+                sE.Effect(Properties.Resources.gear);
                 foreach (Image item in new Image[] { Properties.Resources.set1, Properties.Resources.set2, Properties.Resources.set3})
                 {
                     Bitmap bmp = new Bitmap(item);
@@ -98,12 +106,14 @@ namespace ToodedAB
                 }
             } while (setting.ClientRectangle.Contains(setting.PointToClient(Cursor.Position)));
             setting.BackgroundImage = Properties.Resources.set;
+            sE.Stop();
         }
 
         private async void Start_MouseHover(object sender, EventArgs e)
         {
             do
             {
+                sE.Effect(Properties.Resources.move);
                 foreach (Image item in new Image[] { Properties.Resources.cart1, Properties.Resources.cart2, Properties.Resources.cart3, Properties.Resources.cart4, Properties.Resources.cart5, Properties.Resources.cart6 })
                 {
                     start.BackgroundImage = item;
@@ -111,6 +121,7 @@ namespace ToodedAB
                 }
             } while (start.ClientRectangle.Contains(start.PointToClient(Cursor.Position)));
             start.BackgroundImage = Properties.Resources.cart;
+            sE.Stop();
         }
     }
 }

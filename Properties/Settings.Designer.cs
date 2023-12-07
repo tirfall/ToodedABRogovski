@@ -34,17 +34,5 @@ namespace ToodedAB.Properties {
                 this["SoundValue"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public int MusicValue {
-            get {
-                return ((int)(this["MusicValue"]));
-            }
-            set {
-                this["MusicValue"] = value;
-            }
-        }
     }
 }

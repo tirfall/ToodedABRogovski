@@ -168,6 +168,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>Tooded_DB.mdf</DependentUpon>
     </Content>
+    <None Include="Resources\Icon.ico" />
+    <None Include="Resources\gear.mp3" />
+    <None Include="Resources\volume.mp3" />
+    <None Include="Resources\acc.mp3" />
+    <None Include="Resources\click.mp3" />
+    <None Include="Resources\light.mp3" />
+    <None Include="Resources\move.mp3" />
+    <None Include="Resources\text.mp3" />
     <None Include="Resources\music6.mp3" />
     <None Include="Resources\music1.mp3" />
     <None Include="Resources\music2.mp3" />

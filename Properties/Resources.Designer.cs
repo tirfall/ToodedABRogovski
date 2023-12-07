@@ -61,6 +61,16 @@ namespace ToodedAB.Properties {
         }
         
         /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] acc {
+            get {
+                object obj = ResourceManager.GetObject("acc", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap account {
@@ -161,6 +171,26 @@ namespace ToodedAB.Properties {
         }
         
         /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] click {
+            get {
+                object obj = ResourceManager.GetObject("click", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] gear {
+            get {
+                object obj = ResourceManager.GetObject("gear", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap house {
@@ -187,6 +217,26 @@ namespace ToodedAB.Properties {
             get {
                 object obj = ResourceManager.GetObject("Icon", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] light {
+            get {
+                object obj = ResourceManager.GetObject("light", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] move {
+            get {
+                object obj = ResourceManager.GetObject("move", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -327,6 +377,26 @@ namespace ToodedAB.Properties {
             get {
                 object obj = ResourceManager.GetObject("sound3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] text {
+            get {
+                object obj = ResourceManager.GetObject("text", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] volume {
+            get {
+                object obj = ResourceManager.GetObject("volume", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }
