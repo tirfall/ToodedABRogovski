@@ -34,5 +34,17 @@ namespace ToodedAB.Properties {
                 this["SoundValue"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Log {
+            get {
+                return ((bool)(this["Log"]));
+            }
+            set {
+                this["Log"] = value;
+            }
+        }
     }
 }

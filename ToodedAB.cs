@@ -83,11 +83,6 @@ namespace ToodedAB
             connect.Close();
         }
 
-        private void ToodedAB_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void Btn6_Click(object sender, EventArgs e)
         {
             command = new SqlCommand("DELETE FROM Toodetable WHERE Toodenimetus=@nimi", connect);
@@ -98,6 +93,7 @@ namespace ToodedAB
             Naita();
         }
 
+        //при нажатии на клетку в таблице
         private void Dgv_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int i = 0;
@@ -186,6 +182,7 @@ namespace ToodedAB
             Naita();
         }
 
+        //Обновить текстовый ящик для категории
         private void NaitaKategooriad()
         {
             kategooria = new Dictionary<string, int>();
@@ -215,6 +212,7 @@ namespace ToodedAB
             connect.Close();
         }
 
+        //Обновить все текстовые ящики таблицы Toodetable
         private void NaitaRows()
         {
             connect.Open();
@@ -234,6 +232,7 @@ namespace ToodedAB
             connect.Close();
         }
 
+        //Показать данные в таблицы
         private void NaitaAndmed()
         {
             connect.Open();
@@ -261,6 +260,7 @@ namespace ToodedAB
             connect.Close();
         }
 
+        //Показать всё (активирует все методы Naita)
         private void Naita()
         {
             foreach (ComboBox item in new ComboBox[] { cb1, cb4, cb5 })
@@ -276,6 +276,7 @@ namespace ToodedAB
             NaitaPilt();
         }
 
+        //Показать картинку
         private void NaitaPilt()
         {
             try
