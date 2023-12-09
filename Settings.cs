@@ -9,6 +9,7 @@ using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using ToodedAB.Properties;
 
 namespace ToodedAB
@@ -19,7 +20,7 @@ namespace ToodedAB
         Pood pood;
         Label home, sound, account, lsound, login, fpass,reg,log;
         TextBox username, password, password1, hint;
-        Button sisse, registr;
+        Button sisse, registr,reset;
         Bitmap bmp, soundbmp;
         TrackBar tbsound;
         UserControl uc, uc1;
@@ -77,6 +78,93 @@ namespace ToodedAB
 
         }
 
+        //получаю все аккаунты из базы данных
+        private void GetAccounts()
+        {
+            connect.Open(); //получаю все аккаунты из базы данных
+            adapter_acc = new SqlDataAdapter("SELECT Username,Password,Hint FROM Account", connect);
+            DataTable dt_kat = new DataTable();
+            adapter_acc.Fill(dt_kat);
+            acc = new Dictionary<string, string[]>();
+            foreach (DataRow item in dt_kat.Rows)
+            {
+                //Словарь где имя - ключа, а пароль и подсказка это список который является значением для ключа
+                acc[item["Username"].ToString()] = new string[] { item["Password"].ToString(), item["Hint"].ToString() };
+            }
+            connect.Close();
+        }
+
+        //UserControl для восстановления пароля
+        private void Forgot()
+        {
+            uc1.Controls.Clear();
+            lbclick = false; pbclick = false; pb1click = false; hclick = false;
+
+            login = new Label() { Text = "Parooli taastamine", Font = new Font("Arial", 30), Location = new Point(uc1.Width / 2 - 170, 30), AutoSize = true };
+
+            username = new TextBox() { Text = "Nimi...", Font = new Font("Arial", 30), Size = new Size(uc1.Width - 60, 20), Location = new Point(30, login.Bottom + 100), TextAlign = HorizontalAlignment.Center, ForeColor = Color.Gray, MaxLength = 20 };
+            username.MouseHover += Username_MouseHover;
+            username.MouseClick += Username_MouseClick;
+
+            hint = new TextBox() { Text = "Vihje...", Font = new Font("Arial", 30), Size = username.Size, Location = new Point(30, username.Bottom + 40), TextAlign = HorizontalAlignment.Center, ForeColor = Color.Gray, MaxLength = 20 };
+            hint.MouseHover += hint_MouseHover;
+            hint.MouseClick += hint_MouseClick;
+
+            password1 = new TextBox() { Text = "Uue parool...", Font = new Font("Arial", 30), Size = username.Size, Location = new Point(30, hint.Bottom + 40), TextAlign = HorizontalAlignment.Center, ForeColor = Color.Gray, MaxLength = 20 };
+            password1.MouseHover += password1_MouseHover;
+            password1.MouseClick += password1_MouseClick;
+
+            reset = new Button() { Text = "Taastamine", Font = new Font("Arial", 30), Size = username.Size, Location = new Point(password.Left, uc1.Height - 70), TextAlign = ContentAlignment.MiddleCenter };
+            reset.Click += reset_Click;
+
+            log = new Label() { Text = "Mul on konto", Font = new Font("Arial", 15), AutoSize = true, Location = new Point(password.Left, reset.Top - 30), ForeColor = Color.Gray };
+            log.MouseHover += log_MouseHover;
+            log.MouseLeave += log_MouseLeave;
+            log.MouseClick += log_MouseClick;
+
+            reg = new Label() { Text = "Registreeri", Font = new Font("Arial", 15), AutoSize = true, Location = new Point(password.Right - 100, reset.Top - 30), ForeColor = Color.Gray };
+            reg.MouseHover += reg_MouseHover;
+            reg.MouseLeave += reg_MouseLeave;
+            reg.MouseClick += Reg_MouseClick;
+
+            uc1.Controls.AddRange(new Control[] { login, username, hint, password1, reset, log, reg });
+        }
+
+        //при нажатии на кнопку восстановления
+        private void reset_Click(object sender, EventArgs e)
+        {
+            GetAccounts(); //получаю все аккаунты из бд
+            bool i = false;
+            //проверяю что все условия подходят для изменения пароля
+            if (!acc.ContainsKey(username.Text))
+            {
+                username.BackColor = Color.Red;
+                hint.BackColor = Color.Red;
+                i = true;
+            }
+            else if (acc[username.Text][1]!=hint.Text.ToString())
+            {
+                hint.BackColor = Color.Red;
+                i = true;
+            }
+            if (password1.Text.Length<=3)
+            {
+                hint.BackColor = Color.Red;
+                i = true;
+            }
+            if (i)
+                return;
+            //изменяю пароль в бд
+            command = new SqlCommand("UPDATE Account SET Password=@pass WHERE Username=@nimi", connect);
+            connect.Open();
+            command.Parameters.AddWithValue("@pass", password1.Text);
+            command.Parameters.AddWithValue("@nimi", username.Text);
+            command.ExecuteNonQuery();
+            connect.Close();
+            MessageBox.Show("Konto moodustud", "Edu!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Log(); //открываю UserControl для входа
+        }
+
         //UserControl для регистрации
         private void Reg()
         {
@@ -85,7 +173,7 @@ namespace ToodedAB
 
             login = new Label() { Text = "Registreeri", Font = new Font("Arial", 30), Location = new Point(uc1.Width / 2 - 100, 30), AutoSize = true };
             
-            username = new TextBox() { Text = "Isikukood või nimi...", Font = new Font("Arial", 30), Size = new Size(uc1.Width - 60, 20), Location = new Point(30, login.Bottom + 60), TextAlign = HorizontalAlignment.Center, ForeColor = Color.Gray, MaxLength = 20 };
+            username = new TextBox() { Text = "Nimi...", Font = new Font("Arial", 30), Size = new Size(uc1.Width - 60, 20), Location = new Point(30, login.Bottom + 60), TextAlign = HorizontalAlignment.Center, ForeColor = Color.Gray, MaxLength = 20 };
             username.MouseHover += Username_MouseHover;
             username.MouseClick += Username_MouseClick;
 
@@ -120,7 +208,7 @@ namespace ToodedAB
 
             login = new Label() { Text = "Logi sisse", Font = new Font("Arial", 30), Location = new Point(uc1.Width / 2 - 100, 30), AutoSize = true };
 
-            username = new TextBox() { Text = "Isikukood või nimi...", Font = new Font("Arial", 30), Size = new Size(uc1.Width - 60, 20), Location = new Point(30, login.Bottom + 100), TextAlign = HorizontalAlignment.Center, ForeColor = Color.Gray, MaxLength = 20 };
+            username = new TextBox() { Text = "Nimi...", Font = new Font("Arial", 30), Size = new Size(uc1.Width - 60, 20), Location = new Point(30, login.Bottom + 100), TextAlign = HorizontalAlignment.Center, ForeColor = Color.Gray, MaxLength = 20 };
             username.MouseHover += Username_MouseHover;
             username.MouseClick += Username_MouseClick;
 
@@ -134,6 +222,7 @@ namespace ToodedAB
             fpass = new Label() { Text = "Unustasin parooli", Font = new Font("Arial", 15), AutoSize = true, Location = new Point(password.Left, sisse.Top - 30), ForeColor = Color.Gray };
             fpass.MouseHover += Fpass_MouseHover;
             fpass.MouseLeave += Fpass_MouseLeave;
+            fpass.MouseClick += Fpass_MouseClick;
 
             reg = new Label() { Text = "Registreeri", Font = new Font("Arial", 15), AutoSize = true, Location = new Point(password.Right - 100, sisse.Top - 30), ForeColor = Color.Gray };
             reg.MouseHover += reg_MouseHover;
@@ -141,6 +230,13 @@ namespace ToodedAB
             reg.MouseClick += Reg_MouseClick;
 
             uc1.Controls.AddRange(new Control[] { login, username, password, fpass, reg, sisse });
+        }
+
+        //при нажатии на лейбл "забыл пароль"
+        private void Fpass_MouseClick(object sender, MouseEventArgs e)
+        {
+            sE.Effect(Properties.Resources.click); //звуковой эффект клика
+            Forgot(); //UserControl для восстановления пароля
         }
 
         //при нажатии на лейбл "У меня есть аккаунт"
@@ -183,19 +279,56 @@ namespace ToodedAB
             accountForm.Show();
         }
 
-        //Доделать
         //для регистрации пользователя
         private void registr_Click(object sender, EventArgs e)
         {
             sE.Effect(Properties.Resources.click); //звуковой эффект клика
-            //здесь будет регистрация
+            username.BackColor = Color.White;
+            password.BackColor = Color.White;
+            password1.BackColor = Color.White;
+            hint.BackColor = Color.White;
+            GetAccounts(); //Получаю все аккаунты
+            bool i = false;
+            //Проверка что все данные подходят для создания аккаунта
+            if (username.Text.Length <= 3 || acc.ContainsKey(username.Text))
+            {
+                username.BackColor = Color.Red;
+                i = true;
+            }
+            if (password.Text.Length <= 3)
+            {
+                password.BackColor = Color.Red;
+                i = true;
+            }
+            if (password1.Text != password.Text || password1.Text.Length <= 3)
+            {
+                password1.BackColor = Color.Red;
+                i = true;
+            }
+            if (hint.Text.Length <= 3)
+            {
+                hint.BackColor = Color.Red;
+                i = true;
+            }
+            if (i)
+                return;
+            //Добавляю аккаунт в базу данных
+            command = new SqlCommand("INSERT INTO Account (Username,Password,Hint) VALUES (@user,@pass,@hint)", connect);
+            connect.Open();
+            command.Parameters.AddWithValue("@user", username.Text);
+            command.Parameters.AddWithValue("@pass", password.Text);
+            command.Parameters.AddWithValue("@hint", hint.Text);
+            command.ExecuteNonQuery();
+            connect.Close();
+            MessageBox.Show("Konto loodud", "Edu!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Log(); //открываю UserControl для входа
         }
 
         // при нажатии на текстовый ящик с подсказкой
         private async void hint_MouseClick(object sender, MouseEventArgs e)
         {
             sE.Effect(Properties.Resources.click); //звуковой эффект клика
-            hint.MouseHover -= password_MouseHover; //убираю метод с анимацией
+            hint.MouseHover -= hint_MouseHover; //убираю метод с анимацией
             hclick = true;
             //полное завершение анимации
             await Task.Run(() =>
@@ -238,12 +371,13 @@ namespace ToodedAB
         private async void password1_MouseClick(object sender, MouseEventArgs e)
         {
             sE.Effect(Properties.Resources.click); //звуковой эффект клика
-            password1.MouseHover -= password_MouseHover; //убираю метод анимации
-            pb1click = true; 
+            password1.MouseHover -= password1_MouseHover; //убираю метод анимации
+            pb1click = true;
+            string text = password1.Text.Replace("...","");
             //Необходимо для полного завершения анимации
             await Task.Run(() =>
             {
-                while (password1.Text.Contains("Korda parool"))
+                while (password1.Text.Contains(text))
                 {
                     //Для правильной работы кода
                     Invoke((MethodInvoker)delegate { password1.Text = ""; });
@@ -258,10 +392,12 @@ namespace ToodedAB
         private async void password1_MouseHover(object sender, EventArgs e)
         {
             //анимация текстового ящика с паролем (текстовый ящик для регистрации)
+            string text;
             do
             {
+                text = password1.Text.Replace("...","");
                 sE.Effect(Properties.Resources.text); //звуковой эффект печати
-                foreach (string item in new string[] { "Korda parool.", "Korda parool..", "Korda parool..." })
+                foreach (string item in new string[] { text+".", text+"..", text+"..." })
                 {
                     password1.Text = item;
                     if (pb1click) //проверяем нажимал ли пользователь на текстовый ящик 
@@ -273,11 +409,11 @@ namespace ToodedAB
                         return;
                 }
             } while (password1.ClientRectangle.Contains(password1.PointToClient(Cursor.Position)));
-            password1.Text = "Korda parool...";
+            password1.Text = text+"...";
             sE.Stop();
         }
 
-        // при нажатии на кнопку Вход
+        // Для входа в аккаунт
         private void Sisse_Click(object sender, EventArgs e)
         {
             sE.Effect(Properties.Resources.click); //звуковой эффект клика
@@ -291,27 +427,21 @@ namespace ToodedAB
                 tab.Closed += (s, args) => this.Close();
                 tab.Show();
             }
-            connect.Open(); //получаю все аккаунты из базы данных
-            adapter_acc = new SqlDataAdapter("SELECT Username,Password,Hint FROM Account", connect);
-            DataTable dt_kat = new DataTable();
-            adapter_acc.Fill(dt_kat);
-            acc = new Dictionary<string, string[]>();
-            foreach (DataRow item in dt_kat.Rows)
-            {
-                //Словарь где имя - ключа, а пароль и подсказка это список который является значением для ключа
-                acc[item["Username"].ToString()] = new string[] { item["Password"].ToString(), item["Hint"].ToString() };
-            }
-            connect.Close();
-            if (username.Text.Length <= 3 || !acc.ContainsKey(username.Text))
+            GetAccounts(); //получаю словарь с аккаунтами
+            bool i = false;
+            if (!acc.ContainsKey(username.Text))
             {
                 username.BackColor = Color.Red;
-                return;
+                password.BackColor = Color.Red;
+                i = true;
             }
-            if (password.Text.Length <= 3 || acc[username.Text][0]!=password.Text)
+            else if (acc[username.Text][0]!=password.Text)
             {
                 password.BackColor = Color.Red;
-                return;
+                i = true;
             }
+            if (i)
+                return;
             else
             {
                 //если в аккаунт вошли то код это запоминает и теперь при каждом запуске он
@@ -393,7 +523,7 @@ namespace ToodedAB
             sE.Stop(); //остановка звукового эффекта
         }
 
-        // при нажатии на текстовый ящик с именем/иссикукодом
+        // при нажатии на текстовый ящик с именем
         private async void Username_MouseClick(object sender, MouseEventArgs e)
         {
             sE.Effect(Properties.Resources.click); //звуковой эффект клика
@@ -403,7 +533,7 @@ namespace ToodedAB
             await Task.Run(() =>
             {
                 //Нужно чтобы анимация точно прекратилась
-                while (username.Text.Contains("Isikukood või nimi"))
+                while (username.Text.Contains("Nimi"))
                 {
                     //без него код не видит правильно username
                     Invoke((MethodInvoker)delegate { username.Text = ""; });
@@ -412,14 +542,14 @@ namespace ToodedAB
             username.ForeColor = Color.Black;
         }
 
-        // при наведении мышки на текстовый ящик с именем/иссикукодом
+        // при наведении мышки на текстовый ящик с именем
         private async void Username_MouseHover(object sender, EventArgs e)
         {
-            //анимация текстового ящика с именем/иссикукодом
+            //анимация текстового ящика с именем
             do
             {
                 sE.Effect(Properties.Resources.text); //звуковой эффект печати
-                foreach (string item in new string[]{ "Isikukood või nimi.", "Isikukood või nimi..", "Isikukood või nimi..." })
+                foreach (string item in new string[]{ "Nimi.", "Nimi..", "Nimi..." })
                 {
                     username.Text = item;
                     if (lbclick) //переменная проверяет, нажимали ли уже на текстовый ящик или нет
@@ -431,7 +561,7 @@ namespace ToodedAB
                         return;
                 }
             } while (username.ClientRectangle.Contains(username.PointToClient(Cursor.Position)));//если курсор мыши на обьекте
-            username.Text = "Isikukood või nimi..."; //Статичный текст для текстового ящика
+            username.Text = "Nimi..."; //Статичный текст для текстового ящика
             sE.Stop(); //остановка звукового эффекта
         }
 

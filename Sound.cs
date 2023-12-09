@@ -32,8 +32,8 @@ namespace ToodedAB
                     {
                         if (i == 0)
                             break;
-                        await Task.Run(async () =>
-                        {
+                        //await Task.Run(async () =>
+                        //{
                             using (MemoryStream stream = new MemoryStream(item))
                             {
                                 using (WaveStream waveStream = WaveFormatConversionStream.CreatePcmStream(new Mp3FileReader(stream)))
@@ -54,7 +54,7 @@ namespace ToodedAB
                                     }
                                 }
                             }
-                        });
+                        //});
                     }
                 }
 
@@ -75,8 +75,8 @@ namespace ToodedAB
              */
             try
             {
-                await Task.Run(async () =>
-                {
+                //await Task.Run(async () =>
+                //{
                     using (MemoryStream stream = new MemoryStream(s))
                     {
                         using (WaveStream waveStream = WaveFormatConversionStream.CreatePcmStream(new Mp3FileReader(stream)))
@@ -95,7 +95,7 @@ namespace ToodedAB
                             }
                         }
                     }
-                });
+                //});
             }
             catch (Exception)
             {
