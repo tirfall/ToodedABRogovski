@@ -70,7 +70,6 @@ namespace ToodedAB
             sE = new Sound();
             s = new Sound();
             s.Music();
-            Properties.Settings.Default.Log = false;
 
             Log();
 
@@ -444,9 +443,11 @@ namespace ToodedAB
                 return;
             else
             {
+                Properties.Settings.Default.Account = username.Text;
                 //если в аккаунт вошли то код это запоминает и теперь при каждом запуске он
                 //не будет запрашивать логин/регистрацию, а сразу запускать (если надо) форму аккаунта
                 Properties.Settings.Default.Log = true;
+                Properties.Settings.Default.Save();
                 Account();
             }
         }

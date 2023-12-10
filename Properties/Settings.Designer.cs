@@ -46,5 +46,17 @@ namespace ToodedAB.Properties {
                 this["Log"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Account {
+            get {
+                return ((string)(this["Account"]));
+            }
+            set {
+                this["Account"] = value;
+            }
+        }
     }
 }
