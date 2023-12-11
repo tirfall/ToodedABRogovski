@@ -58,5 +58,17 @@ namespace ToodedAB.Properties {
                 this["Account"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int Discount {
+            get {
+                return ((int)(this["Discount"]));
+            }
+            set {
+                this["Discount"] = value;
+            }
+        }
     }
 }

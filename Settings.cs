@@ -61,6 +61,8 @@ namespace ToodedAB
             tbsound = new TrackBar() { Maximum = 100, Minimum = 0, AutoSize=false,Height = 200,Width=30, Location = new Point(lsound.Left,lsound.Bottom), 
                 Value = Convert.ToInt32(Properties.Settings.Default.SoundValue), Visible = false, Orientation=Orientation.Vertical};
             tbsound.ValueChanged += Tb_ValueChanged;
+            tbsound.MouseDown += Tbsound_MouseDown;
+
             Tb_ValueChanged(new object(), new EventArgs());
 
             uc = new UserControl() { BorderStyle = BorderStyle.Fixed3D, Size= new Size((Width-home.Right-100),(home.Top+account.Bottom)), Location = new Point(home.Right+50,home.Top), BackColor = Color.Transparent, Visible = false };
@@ -75,6 +77,12 @@ namespace ToodedAB
 
             Controls.AddRange(new Control[] { home,sound, tbsound, account, lsound,uc });
 
+        }
+
+        //при нажатии на ползунок для изменения звука
+        private void Tbsound_MouseDown(object sender, MouseEventArgs e)
+        {
+            sE.Effect(Properties.Resources.click); //звуковой эффект клика
         }
 
         //получаю все аккаунты из базы данных

@@ -167,6 +167,7 @@
     <None Include="Resources\client2.png" />
     <None Include="Resources\Icon.ico" />
     <None Include="Resources\gear.mp3" />
+    <None Include="Resources\p1.pdf" />
     <None Include="Resources\volume.mp3" />
     <None Include="Resources\acc.mp3" />
     <None Include="Resources\click.mp3" />
