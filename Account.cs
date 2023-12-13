@@ -106,6 +106,7 @@ namespace ToodedAB
             password.MouseClick += password_MouseClick;
             ok.MouseHover +=Ok_MouseHover;
             ok.MouseLeave += Ok_MouseLeave;
+            ok.MouseClick += Ok_MouseClick;
 
             p1.Click += Button_Click; p2.Click += Button_Click; p3.Click += Button_Click; p4.Click += Button_Click; p5.Click += Button_Click;
             p4.Click += Button_Click; p5.Click += Button_Click; p6.Click += Button_Click; p7.Click += Button_Click; p8.Click += Button_Click;
@@ -147,6 +148,15 @@ namespace ToodedAB
             VisibleFalse();
             Initialize(Properties.Settings.Default.Account);
             Tsinfo_Click(new object(), new EventArgs());
+        }
+
+        private void Ok_MouseClick(object sender, MouseEventArgs e)
+        {
+            sE.Effect(Properties.Resources.click);
+            if (password.Text==pro)
+            {
+
+            }
         }
 
         private void Eye3_MouseClick(object sender, MouseEventArgs e)
