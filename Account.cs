@@ -22,10 +22,11 @@ namespace ToodedAB
         MenuStrip MainMenu;
         ToolStripMenuItem tsinfo, tscheck, tssetting, tskodu;
         PictureBox pb;
-        Label nimi, aeg, raha, bonus, level, difference, tsekk;
+        Label nimi, aeg, raha, bonus, level, difference, tsekk, hint, pass;
+        TextBox tbNimi, tbPass, tbHint;
         Sound s, sE;
         Pood pood;
-        Button p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28;
+        Button p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, eye1, eye2, eye3, ok1, ok2, ok3, close1, close2, close3;
         static Button[] temp;
         public Stack<int> fails { get; set; }
         public string Nimi { get; private set; }
@@ -54,13 +55,19 @@ namespace ToodedAB
             MainMenu.Items.AddRange(new ToolStripMenuItem[] { tsinfo, tscheck, tssetting, tskodu });
 
             pb = new PictureBox() { Size = new Size(400, 400), Location = new Point(30, 30), BorderStyle = BorderStyle.Fixed3D };
-            nimi = new Label() {  Font = new Font("Arial", 15), Size = new Size(500, 30), ForeColor = Color.Black };
+            nimi = new Label() {  Font = new Font("Arial", 15), ForeColor = Color.Black };
             aeg = new Label() { Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black };
             raha = new Label() { Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black };
             bonus = new Label() { Location = new Point(pb.Right + 150, raha.Top + 100), Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
             level = new Label() { Location = new Point(pb.Left, pb.Bottom + 30), Font = new Font("Arial", 15), Size = new Size(pb.Width, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
             difference = new Label() { Location = new Point(level.Left, level.Bottom + 30), Font = new Font("Arial", 15), Size = new Size(pb.Width, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
             tsekk = new Label() { Location = new Point(Width / 2 - 160, 20), Font = new Font("Times New Roman", 60, FontStyle.Italic), Text = "Kviitungid", AutoSize = true, BackColor = Color.Transparent, ForeColor = Color.White, BorderStyle = BorderStyle.Fixed3D };
+            pass = new Label() { Font = new Font("Arial", 15), Size = new Size(100, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
+            hint = new Label() { Font = new Font("Arial", 15), Size = new Size(100, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
+
+            tbNimi = new TextBox() { Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
+            tbPass = new TextBox() { Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
+            tbHint = new TextBox() { Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
 
             p1 = new Button(); p2 = new Button(); p3 = new Button(); p4 = new Button(); p5 = new Button(); p6 = new Button();
             p7 = new Button(); p8 = new Button(); p9 = new Button(); p10 = new Button(); p11 = new Button(); p12 = new Button();
@@ -96,7 +103,7 @@ namespace ToodedAB
             tssetting.Click += Tssetting_Click;
             tskodu.Click += Tskodu_Click;
 
-            Controls.AddRange(new Control[] { MainMenu, nimi, raha, aeg, bonus, pb, level, difference, tsekk });
+            Controls.AddRange(new Control[] { MainMenu, nimi, raha, aeg, bonus, pb, level, difference, tsekk, pass, hint, tbNimi, tbPass, tbHint });
             Controls.AddRange(temp);
             VisibleFalse();
             Initialize(Properties.Settings.Default.Account);
@@ -193,25 +200,43 @@ namespace ToodedAB
             }
         }
 
-        /*
-         * 
-         * 
-         * 
-         * 
-         * доделать метод
-         * 
-         * 
-         * 
-         * 
-         */
+        
         private void SettingSet()
         {
-
+            nimi.Size = new Size(100, 30);
+            Label[] labels = new Label[] { nimi, pass, hint};
+            TextBox[] textboxes = new TextBox[] { tbNimi, tbPass, tbHint };
+            foreach (Control item in new Control[] { nimi, pass, hint, tbNimi, tbPass, tbHint }) //делаю нужные обьекты видимыми
+            {
+                item.Visible = true;
+            }
+            for (int i = 0; i < labels.Length; i++) //настройка лейблов
+            {
+                labels[i].BackColor = Color.White;
+                labels[i].ForeColor = Color.Black;
+                labels[i].BorderStyle = BorderStyle.Fixed3D;
+                labels[i].Location = new Point(50, i - 1 >= 0 ? labels[i - 1].Bottom + 50 : 50);
+            }
+            nimi.Text = "Nimi: ";
+            tbNimi.Text = Nimi;
+            pass.Text = "Parool: ";
+            tbPass.Text = Password;
+            hint.Text = "Vihje: ";
+            tbHint.Text = Hint;
+            for (int i = 0; i < textboxes.Length; i++)
+            {
+                textboxes[i].ForeColor = Color.Black;
+                textboxes[i].BorderStyle = BorderStyle.Fixed3D;
+                textboxes[i].Location = new Point(labels[i].Right+25, labels[i].Location.Y);
+                textboxes[i].UseSystemPasswordChar = i > 0 ? true: false;
+                textboxes[i].Enabled = false;
+            }
         }
 
         //настройки для ToolStrip Info
         private void InfoSet()
         {
+            nimi.Size = new Size(500, 30);
             foreach (Control item in new Control[] { pb, nimi, raha, aeg, bonus, level, difference }) //делаю нужные обьекты видимыми
             {
                 item.Visible = true;
@@ -276,7 +301,8 @@ namespace ToodedAB
         private void Tssetting_Click(object sender, EventArgs e)
         {
             sE.Effect(Properties.Resources.click);
-            VisibleFalse();
+            VisibleFalse(); //делаю все обьекты невидимыми 
+            SettingSet(); //Устанавливаю нужные лейблы, текстовые ящики и их настройки
         }
 
         //если нажали на ToolStrip Ostud (чеки) 
