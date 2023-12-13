@@ -7,9 +7,12 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ToodedAB.Properties;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace ToodedAB
@@ -23,10 +26,11 @@ namespace ToodedAB
         ToolStripMenuItem tsinfo, tscheck, tssetting, tskodu;
         PictureBox pb;
         Label nimi, aeg, raha, bonus, level, difference, tsekk, hint, pass;
-        TextBox tbNimi, tbPass, tbHint;
+        TextBox tbNimi, tbPass, tbHint, password;
         Sound s, sE;
         Pood pood;
-        Button p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, eye1, eye2, eye3, ok1, ok2, ok3, close1, close2, close3;
+        Button p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, eye1, eye2, eye3, ok1, ok2, ok3, close1, close2, close3, login, logout, ok;
+        bool log, pbclick = false;
         static Button[] temp;
         public Stack<int> fails { get; set; }
         public string Nimi { get; private set; }
@@ -55,27 +59,61 @@ namespace ToodedAB
             MainMenu.Items.AddRange(new ToolStripMenuItem[] { tsinfo, tscheck, tssetting, tskodu });
 
             pb = new PictureBox() { Size = new Size(400, 400), Location = new Point(30, 30), BorderStyle = BorderStyle.Fixed3D };
-            nimi = new Label() {  Font = new Font("Arial", 15), ForeColor = Color.Black };
-            aeg = new Label() { Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black };
-            raha = new Label() { Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black };
-            bonus = new Label() { Location = new Point(pb.Right + 150, raha.Top + 100), Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
-            level = new Label() { Location = new Point(pb.Left, pb.Bottom + 30), Font = new Font("Arial", 15), Size = new Size(pb.Width, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
-            difference = new Label() { Location = new Point(level.Left, level.Bottom + 30), Font = new Font("Arial", 15), Size = new Size(pb.Width, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
+            nimi = new Label() { Font = new Font("Arial", 15), ForeColor = Color.Black };
+            aeg = new Label() { Font = new Font("Arial", 15), Size = new Size(500, 30) };
+            raha = new Label() { Font = new Font("Arial", 15), Size = new Size(500, 30) };
+            bonus = new Label() { Location = new Point(pb.Right + 150, raha.Top + 100), Font = new Font("Arial", 15), Size = new Size(500, 30), BorderStyle = BorderStyle.Fixed3D };
+            level = new Label() { Location = new Point(pb.Left, pb.Bottom + 30), Font = new Font("Arial", 15), Size = new Size(pb.Width, 30), BorderStyle = BorderStyle.Fixed3D };
+            difference = new Label() { Location = new Point(level.Left, level.Bottom + 30), Font = new Font("Arial", 15), Size = new Size(pb.Width, 30), BorderStyle = BorderStyle.Fixed3D };
             tsekk = new Label() { Location = new Point(Width / 2 - 160, 20), Font = new Font("Times New Roman", 60, FontStyle.Italic), Text = "Kviitungid", AutoSize = true, BackColor = Color.Transparent, ForeColor = Color.White, BorderStyle = BorderStyle.Fixed3D };
-            pass = new Label() { Font = new Font("Arial", 15), Size = new Size(100, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
-            hint = new Label() { Font = new Font("Arial", 15), Size = new Size(100, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
+            pass = new Label() { Font = new Font("Arial", 15), Size = new Size(100, 30), BorderStyle = BorderStyle.Fixed3D };
+            hint = new Label() { Font = new Font("Arial", 15), Size = new Size(100, 30), BorderStyle = BorderStyle.Fixed3D };
 
-            tbNimi = new TextBox() { Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
-            tbPass = new TextBox() { Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
-            tbHint = new TextBox() { Font = new Font("Arial", 15), Size = new Size(500, 30), BackColor = Color.White, ForeColor = Color.Black, BorderStyle = BorderStyle.Fixed3D };
+            tbNimi = new TextBox() { Font = new Font("Arial", 15), Size = new Size(500, 30), BorderStyle = BorderStyle.Fixed3D };
+            tbPass = new TextBox() { Font = new Font("Arial", 15), Size = new Size(500, 30), BorderStyle = BorderStyle.Fixed3D };
+            tbHint = new TextBox() { Font = new Font("Arial", 15), Size = new Size(500, 30), BorderStyle = BorderStyle.Fixed3D };
 
             p1 = new Button(); p2 = new Button(); p3 = new Button(); p4 = new Button(); p5 = new Button(); p6 = new Button();
             p7 = new Button(); p8 = new Button(); p9 = new Button(); p10 = new Button(); p11 = new Button(); p12 = new Button();
             p13 = new Button(); p14 = new Button(); p15 = new Button(); p16 = new Button(); p17 = new Button(); p18 = new Button();
             p19 = new Button(); p20 = new Button(); p21 = new Button(); p22 = new Button(); p23 = new Button(); p24 = new Button();
             p25 = new Button(); p26 = new Button(); p27 = new Button(); p28 = new Button();
-            p1.Click += Button_Click;
-            //обьявил все кнопки так, так как иначе невозможно (нельзя это сделать во время написания их выше и также в цикле
+            //обьявил все кнопки так, так как иначе невозможно (нельзя это сделать во время написания их выше и также в цикле)
+
+            Bitmap bmp = Properties.Resources.eye;
+            bmp.MakeTransparent(Color.White);
+            eye1 = new Button() { BackgroundImage = bmp, Size = new Size(45, 45), BackgroundImageLayout = ImageLayout.Zoom };
+            eye1.MouseHover +=Eye_MouseHover;
+            eye1.MouseClick +=Eye1_MouseClick;
+            eye2 = new Button() { BackgroundImage = bmp, Size = new Size(45, 45), BackgroundImageLayout = ImageLayout.Zoom };
+            eye2.MouseHover +=Eye_MouseHover;
+            eye2.MouseClick +=Eye2_MouseClick;
+            eye3 = new Button() { BackgroundImage = bmp, Size = new Size(45, 45), BackgroundImageLayout = ImageLayout.Zoom };
+            eye3.MouseHover +=Eye_MouseHover;
+            eye3.MouseClick +=Eye3_MouseClick;
+
+            login = new Button() { Text = "Logi sisse", Size = new Size(200, 50), Font = new Font("Arial", 20) };
+            login.MouseHover +=Label_MouseHover;
+            login.Click += Login_Click;
+            logout = new Button() { Text = "Logi välja", Size = login.Size, Font = new Font("Arial", 20) };
+            logout.MouseHover += Label_MouseHover;
+            logout.Click += Logout_Click;
+
+            ok = new Button() { Text = "OK", Size = new Size(100, 100), Font = new Font("Arial", 20) };
+            password = new TextBox() { Text = "Parool...", Font = new Font("Arial", 20), Size = new Size(500, 30), TextAlign = HorizontalAlignment.Center, ForeColor = Color.Gray, MaxLength = 20 };
+
+            password.MouseHover += password_MouseHover;
+            password.MouseClick += password_MouseClick;
+            ok.MouseHover +=Ok_MouseHover;
+            ok.MouseLeave += Ok_MouseLeave;
+
+            p1.Click += Button_Click; p2.Click += Button_Click; p3.Click += Button_Click; p4.Click += Button_Click; p5.Click += Button_Click;
+            p4.Click += Button_Click; p5.Click += Button_Click; p6.Click += Button_Click; p7.Click += Button_Click; p8.Click += Button_Click;
+            p9.Click += Button_Click; p10.Click += Button_Click; p11.Click += Button_Click; p12.Click += Button_Click; p13.Click += Button_Click;
+            p14.Click += Button_Click; p15.Click += Button_Click; p16.Click += Button_Click; p17.Click += Button_Click; p18.Click += Button_Click;
+            p19.Click += Button_Click; p20.Click += Button_Click; p21.Click += Button_Click; p22.Click += Button_Click; p23.Click += Button_Click;
+            p24.Click += Button_Click; p25.Click += Button_Click; p26.Click += Button_Click; p27.Click += Button_Click; p28.Click += Button_Click;
+            
             temp = new Button[] { p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, null };
             //создал список для удобства
             for (int i = 0, j = 150, k = 0; i < temp.Length - 1; i++)
@@ -103,11 +141,169 @@ namespace ToodedAB
             tssetting.Click += Tssetting_Click;
             tskodu.Click += Tskodu_Click;
 
-            Controls.AddRange(new Control[] { MainMenu, nimi, raha, aeg, bonus, pb, level, difference, tsekk, pass, hint, tbNimi, tbPass, tbHint });
+            Controls.AddRange(new Control[] { MainMenu, nimi, raha, aeg, bonus, pb, level, difference, tsekk, pass, hint, tbNimi, 
+                tbPass, tbHint, eye2, eye1, eye3, login, logout,password, ok});
             Controls.AddRange(temp);
             VisibleFalse();
             Initialize(Properties.Settings.Default.Account);
             Tsinfo_Click(new object(), new EventArgs());
+        }
+
+        private void Eye3_MouseClick(object sender, MouseEventArgs e)
+        {
+            sE.Effect(Properties.Resources.click);
+            if (log)
+            {
+
+            }
+        }
+
+        private void Eye2_MouseClick(object sender, MouseEventArgs e)
+        {
+            sE.Effect(Properties.Resources.click);
+            if (log)
+            {
+
+            }
+        }
+
+        private void Eye1_MouseClick(object sender, MouseEventArgs e)
+        {
+            sE.Effect(Properties.Resources.click);
+            if (log)
+            {
+
+            }
+        }
+
+        private void Login_Click(object sender, EventArgs e)
+        {
+            password.Visible = true;
+            ok.Visible = true;
+            sE.Effect(Properties.Resources.click);
+            password.Location = new Point(login.Right+50, login.Location.Y);
+            ok.Location = new Point(password.Right+25, password.Location.Y-25);
+        }
+
+        private void Ok_MouseLeave(object sender, EventArgs e)
+        {
+            ok.BackColor = Color.White;
+            ok.ForeColor = Color.Black;
+        }
+
+        private void Ok_MouseHover(object sender, EventArgs e)
+        {
+            ok.BackColor = Color.Green;
+            ok.ForeColor = Color.White;
+        }
+
+        private async void password_MouseClick(object sender, MouseEventArgs e)
+        {
+            sE.Effect(Properties.Resources.click); //звуковой эффект клика
+            password.BackColor = Color.White;
+            password.MouseHover -= password_MouseHover; //убираю метод анимации чтобы не мешал пользователю
+            pbclick = true;
+            //метод для полной очистки анимации
+            await Task.Run(() =>
+            {
+                while (password.Text.Contains("Parool"))
+                {
+                    //нужен для корректной работы
+                    Invoke((MethodInvoker)delegate { password.Text = ""; });
+                }
+            });
+            password.ForeColor = Color.Black;
+            await Task.Delay(500);
+        }
+
+        // при наведении мышки на текстовый ящик с паролем
+        private async void password_MouseHover(object sender, EventArgs e)
+        {
+            //Анимация для текстового ящика с паролем
+            do
+            {
+                sE.Effect(Properties.Resources.text);
+                foreach (string item in new string[] { "Parool.", "Parool..", "Parool..." })
+                {
+                    password.Text = item;
+                    if (pbclick) //переменная которая проверяет нажимали ли на текстовый ящик 
+                        return;
+                    await Task.Delay(500);
+                    if (!password.ClientRectangle.Contains(password.PointToClient(Cursor.Position))) //если курсор мыши не на обьекте
+                        break;
+                    if (pbclick)
+                        return;
+                }
+            } while (password.ClientRectangle.Contains(password.PointToClient(Cursor.Position))); //если курсор мыши на обьекте
+            password.Text = "Parool..."; //Статичный текст для текствого ящика с паролем
+            sE.Stop(); //остановка звукового эффекта
+        }
+
+        private void Logout_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Log = false;
+            Properties.Settings.Default.Save();
+            Tskodu_Click(new object(),new EventArgs());
+        }
+
+        private async void Label_MouseHover(object sender, EventArgs e)
+        {
+            if (sender is Button btn)
+            {
+                string text = btn.Text;
+                do
+                {
+                    sE.Effect(Properties.Resources.text); //звуковой эффект печати
+                    btn.Text = "";
+                    foreach (char item in text.ToCharArray())
+                    {
+                        btn.Text += item;
+                        if (!btn.ClientRectangle.Contains(btn.PointToClient(Cursor.Position))) //если курсор мыши не на обьекте
+                            break;
+                        await Task.Delay(250);
+                    }
+                } while (btn.ClientRectangle.Contains(btn.PointToClient(Cursor.Position))); //если курсор мыши на обьекте
+                btn.Text = text; //статичный текст для кнопки
+                sE.Stop();
+            }
+        }
+
+
+        //доделать
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        private async void Eye_MouseHover(object sender, EventArgs e)
+        {
+            Bitmap[] animate = new Bitmap[] {Properties.Resources.eye, Properties.Resources.eye1, Properties.Resources.eye2,
+                Properties.Resources.eye3, Properties.Resources.eye2,Properties.Resources.eye1,Properties.Resources.eye,Properties.Resources.eye4,
+                Properties.Resources.eye5, Properties.Resources.eye6, Properties.Resources.eye3, Properties.Resources.eye6, Properties.Resources.eye7, Properties.Resources.eye8, Properties.Resources.eye
+            };
+            if (sender is Button eye)
+            { 
+                do
+                {
+                    sE.Effect(Properties.Resources.gear); //звуковой эффект моргания 
+                    foreach (Bitmap item in animate)
+                    {
+                        Bitmap bmp = new Bitmap(item);
+                        bmp.MakeTransparent(Color.White); //делаю прозрачным фон
+                        eye.BackgroundImage = bmp;
+                        eye.BackgroundImageLayout = ImageLayout.Zoom;
+                        if (!eye.ClientRectangle.Contains(eye.PointToClient(Cursor.Position)))
+                            break;
+                        await Task.Delay(100);
+                        if (!eye.ClientRectangle.Contains(eye.PointToClient(Cursor.Position)))
+                            break;
+                    }
+                } while (eye.ClientRectangle.Contains(eye.PointToClient(Cursor.Position))); //если курсор мыши на обьекте
+                eye.BackgroundImage = Properties.Resources.eye; //Дефолтная статичная картинка для кнопки
+                sE.Stop();
+            }   
         }
 
         //запускаю заполнение параметров обьекта
@@ -156,24 +352,24 @@ namespace ToodedAB
                     difference.Text = "Maksimaalne tase!"; break;
                 case 25:
                     pb.Image = Properties.Resources.client2; level.Text = "Konto tase: 2 | 25% allahindlust";
-                    temptime = (10000 - Time) < 0 ? 0 : Time;
+                    temptime = (10000 - Time) > 0 ? 10000 - Time : 0;
                     difference.Text = $"Järgmisele tasemele: {temptime}p. {200000 - Money}e."; break;
                 case 20:
                     pb.Image = Properties.Resources.client3; level.Text = "Konto tase: 3 | 20% allahindlust";
-                    temptime = (5000 - Time) < 0 ? 0 : Time;
+                    temptime = (5000 - Time) > 0 ? 5000 - Time : 0;
                     difference.Text = $"Järgmisele tasemele: {temptime}p. {100000 - Money}e."; break;
                 case 10:
                     pb.Image = Properties.Resources.client4; level.Text = "Konto tase: 4 | 10% allahindlust";
-                    temptime = (1000 - Time) < 0 ? 0 : Time; 
+                    temptime = (1000 - Time) > 0 ? 1000 - Time : 0; 
                     difference.Text = $"Järgmisele tasemele: {temptime}p. {20000 - Money}e."; break;
                 case 5:
                     Properties.Settings.Default.Discount = 1;
                     pb.Image = Properties.Resources.client5; level.Text = "Konto tase: 5 | 5% allahindlust";
-                    temptime = (365 - Time) < 0 ? 0 : Time;
+                    temptime = (365 - Time) > 0 ? 365 - Time : 0;
                     difference.Text = $"Järgmisele tasemele: {temptime}p. {5000 - Money}e."; break;
                 case 1:
                     pb.Image = Properties.Resources.client6; level.Text = "Konto tase: 6 | 1% allahindlust";
-                    temptime = (150 - Time) < 0 ? 0 : Time;
+                    temptime = (150 - Time) > 0 ? 150 - Time : 0;
                     difference.Text = $"Järgmisele tasemele: {temptime}p. {1000 - Money}e."; break;
             }
         }
@@ -195,7 +391,7 @@ namespace ToodedAB
                     Discount = 10; break;
                 case int n when (n >= 150 && Money >= 1000):
                     Discount = 5; break;
-                case int n when (n >= 50 && Money >= 100):
+                case int n when (n >= 0 && Money >= 0):
                     Discount = 1; break;
             }
         }
@@ -206,14 +402,13 @@ namespace ToodedAB
             nimi.Size = new Size(100, 30);
             Label[] labels = new Label[] { nimi, pass, hint};
             TextBox[] textboxes = new TextBox[] { tbNimi, tbPass, tbHint };
-            foreach (Control item in new Control[] { nimi, pass, hint, tbNimi, tbPass, tbHint }) //делаю нужные обьекты видимыми
+            Button[] buttons = new Button[] { eye1, eye2, eye3 };
+            foreach (Control item in new Control[] { nimi, pass, hint, tbNimi, tbPass, tbHint, eye1, eye2, eye3,login, logout }) //делаю нужные обьекты видимыми
             {
                 item.Visible = true;
             }
             for (int i = 0; i < labels.Length; i++) //настройка лейблов
             {
-                labels[i].BackColor = Color.White;
-                labels[i].ForeColor = Color.Black;
                 labels[i].BorderStyle = BorderStyle.Fixed3D;
                 labels[i].Location = new Point(50, i - 1 >= 0 ? labels[i - 1].Bottom + 50 : 50);
             }
@@ -225,12 +420,17 @@ namespace ToodedAB
             tbHint.Text = Hint;
             for (int i = 0; i < textboxes.Length; i++)
             {
-                textboxes[i].ForeColor = Color.Black;
                 textboxes[i].BorderStyle = BorderStyle.Fixed3D;
                 textboxes[i].Location = new Point(labels[i].Right+25, labels[i].Location.Y);
                 textboxes[i].UseSystemPasswordChar = i > 0 ? true: false;
                 textboxes[i].Enabled = false;
             }
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                buttons[i].Location = new Point(textboxes[i].Right+25, textboxes[i].Location.Y-10);
+            }
+            logout.Location = new Point(nimi.Left,nimi.Bottom+500);
+            login.Location = new Point(nimi.Left, logout.Bottom+50);
         }
 
         //настройки для ToolStrip Info
@@ -244,8 +444,6 @@ namespace ToodedAB
             Label[] labels = new Label[] { nimi, aeg, raha, bonus };
             for (int i = 0; i < labels.Length; i++) //настройка лейблов
             {
-                labels[i].BackColor = Color.White;
-                labels[i].ForeColor = Color.Black;
                 labels[i].BorderStyle = BorderStyle.Fixed3D;
                 labels[i].Location = new Point(pb.Right + 150, i-1>=0 ? labels[i-1].Top+100 : pb.Top+50);
                 //Локация лейбла будет равна справа от PictureBox на 150 и
@@ -263,15 +461,19 @@ namespace ToodedAB
         //если нажали на какую-то из кнопок в разделе чеки
         private void Button_Click(object sender, EventArgs e)
         {
-            sE.Effect(Properties.Resources.click); //звуковой эффект клика
-            if (sender is Button a) //проверяем что отправитель Кнопка и вместе с этим получаем новую переменную "а"
+            try
             {
-                string[] f = AppDomain.CurrentDomain.BaseDirectory.Split('\\'); //беру текущий путь проекта и создаю из него списка деля строку по \\
-                f = new string[] { f[0], f[1], f[2], f[3], f[4], f[5] }; //беру именно эти значения тк следующие это бин и дебаг, а они лишние
-                System.Diagnostics.Process.Start(String.Join("\\", f) + "\\Resources\\p"+a.Text+".pdf");//обьединяю список в строку
-                                                                                                        //и добавляю еще один нужный путь
-                //"а" - кнопка которая вызвала ивент
+                sE.Effect(Properties.Resources.click); //звуковой эффект клика
+                if (sender is Button a) //проверяем что отправитель Кнопка и вместе с этим получаем новую переменную "а"
+                {
+                    string[] f = AppDomain.CurrentDomain.BaseDirectory.Split('\\'); //беру текущий путь проекта и создаю из него списка деля строку по \\
+                    f = new string[] { f[0], f[1], f[2], f[3], f[4], f[5], f[6] }; //беру именно эти значения тк следующие это бин и дебаг, а они лишние
+                    System.Diagnostics.Process.Start(String.Join("\\", f) + "\\Resources\\p"+a.Text+".pdf");//обьединяю список в строку
+                                                                                                            //и добавляю еще один нужный путь
+                                                                                                            //"а" - кнопка которая вызвала ивент
+                }
             }
+            catch (Exception) { return;  }
         }
 
         //ToolStrip чтобы вернуться в главное меню

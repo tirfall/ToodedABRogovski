@@ -24,19 +24,19 @@ namespace ToodedAB
             * Мелодия не играет только если i == 0 - костыль для остановки музыки
             * Переменная изменяется в Stop()
             */ 
-            try
+            while (i!=0)
             {
-                while (i!=0)
+                foreach (var item in new List<byte[]> { Properties.Resources.music1, Properties.Resources.music2, Properties.Resources.music3, Properties.Resources.music4, Properties.Resources.music5, Properties.Resources.music6 })
                 {
-                    foreach (var item in new List<byte[]> { Properties.Resources.music1, Properties.Resources.music2, Properties.Resources.music3, Properties.Resources.music4, Properties.Resources.music5, Properties.Resources.music6 })
-                    {
-                        if (i == 0)
-                            break;
-                        //await Task.Run(async () =>
-                        //{
-                            using (MemoryStream stream = new MemoryStream(item))
+                    if (i == 0)
+                        break;
+                    //await Task.Run(async () =>
+                    //{
+                        using (MemoryStream stream = new MemoryStream(item))
+                        {
+                            using (WaveStream waveStream = WaveFormatConversionStream.CreatePcmStream(new Mp3FileReader(stream)))
                             {
-                                using (WaveStream waveStream = WaveFormatConversionStream.CreatePcmStream(new Mp3FileReader(stream)))
+                                try
                                 {
                                     using (waveOut = new WaveOutEvent())
                                     {
@@ -52,19 +52,16 @@ namespace ToodedAB
                                                 break;
                                         }
                                     }
-                                }
+
+                                } catch (Exception) { return; }
                             }
-                        //});
-                    }
+                        }
+                    //});
                 }
-
             }
-            catch (Exception)
-            {
 
-                throw;
-            }
         }
+        
 
         //для проигрывания звуковых эффектов
         public async void Effect(byte[] s)
@@ -73,36 +70,33 @@ namespace ToodedAB
              * тип переменной byte[] потому что в свойтсвах/ресурсах все звуковые файла сохраняются именно с таким
              * типом данных
              */
-            try
+            //await Task.Run(async () =>
+            //{
+            using (MemoryStream stream = new MemoryStream(s))
             {
-                //await Task.Run(async () =>
-                //{
-                    using (MemoryStream stream = new MemoryStream(s))
+                using (WaveStream waveStream = WaveFormatConversionStream.CreatePcmStream(new Mp3FileReader(stream)))
+                {
+                    try
                     {
-                        using (WaveStream waveStream = WaveFormatConversionStream.CreatePcmStream(new Mp3FileReader(stream)))
+                        using (waveOut = new WaveOutEvent())
                         {
-                            using (waveOut = new WaveOutEvent())
-                            {
-                                waveOut.Init(waveStream);
-                                waveOut.Volume = (float)Convert.ToDouble(Properties.Settings.Default.SoundValue) / 100f;
-                                waveOut.Play();
+                            waveOut.Init(waveStream);
+                            waveOut.Volume = (float)Convert.ToDouble(Properties.Settings.Default.SoundValue) / 100f;
+                            waveOut.Play();
 
-                                while (waveOut.PlaybackState == PlaybackState.Playing)
-                                {
-                                    waveOut.Volume = (float)Convert.ToDouble(Properties.Settings.Default.SoundValue) / 100f;
-                                    await Task.Delay(100);
-                                }
+                            while (waveOut.PlaybackState == PlaybackState.Playing)
+                            {
+                                waveOut.Volume = (float)Convert.ToDouble(Properties.Settings.Default.SoundValue) / 100f;
+                                await Task.Delay(100);
                             }
                         }
                     }
-                //});
+                    catch (Exception) { return; }
+                }
             }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            //});
         }
+        
 
         //для остановки музыки/эфектов
         public void Stop()

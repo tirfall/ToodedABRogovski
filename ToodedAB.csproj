@@ -51,6 +51,9 @@
     <StartupObject>ToodedAB.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aspose.PDF, Version=23.11.1.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>packages\Aspose.PDF.23.11.1\lib\net4.0\Aspose.PDF.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Win32.Registry, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Win32.Registry.4.7.0\lib\net461\Microsoft.Win32.Registry.dll</HintPath>
     </Reference>
@@ -159,6 +162,20 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>Tooded_DB.mdf</DependentUpon>
     </Content>
+    <None Include="Resources\cancel.png" />
+    <None Include="Resources\cancel1.png" />
+    <None Include="Resources\ok.png" />
+    <None Include="Resources\ok1.png" />
+    <None Include="Resources\eye2.png" />
+    <None Include="Resources\eye3.png" />
+    <None Include="Resources\eye1.png" />
+    <None Include="Resources\eye.png" />
+    <None Include="Resources\eye8.png" />
+    <None Include="Resources\eye7.png" />
+    <None Include="Resources\eye6.png" />
+    <None Include="Resources\eye5.png" />
+    <None Include="Resources\eye4.png" />
+    <None Include="Resources\eye.gif" />
     <None Include="Resources\client1.png" />
     <None Include="Resources\client6.png" />
     <None Include="Resources\client5.png" />
@@ -215,8 +232,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
