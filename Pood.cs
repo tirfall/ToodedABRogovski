@@ -65,6 +65,8 @@ namespace ToodedAB
         private void Start_MouseClick(object sender, MouseEventArgs e)
         {
             sE.Effect(Properties.Resources.click);
+            sE.Stop();
+            s.Stop();
             this.Hide();
             main = new Main();
             main.Closed += (s, args) => this.Close();

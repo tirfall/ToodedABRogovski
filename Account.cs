@@ -12,8 +12,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ToodedAB.Properties;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace ToodedAB
 {
@@ -31,6 +29,7 @@ namespace ToodedAB
         Pood pood;
         Button p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, eye1, eye2, eye3, ok1, ok2, ok3, close1, close2, close3, login, logout, ok;
         bool log, pbclick = false;
+        bool c1, c2, c3 = true;
         static Button[] temp;
         public Stack<int> fails { get; set; }
         public string Nimi { get; private set; }
@@ -92,6 +91,26 @@ namespace ToodedAB
             eye3.MouseHover +=Eye_MouseHover;
             eye3.MouseClick +=Eye3_MouseClick;
 
+            ok1 = new Button(); ok2 = new Button(); ok3 = new Button();
+            foreach (Button item in new Button[] { ok1, ok2, ok3 })
+            {
+                item.BackgroundImage = Properties.Resources.ok;
+                item.Size = new Size(45, 45);
+                item.BackgroundImageLayout = ImageLayout.Zoom;
+                item.MouseHover+=OkN_MouseHover;
+                item.MouseLeave+=OkN_MouseLeave;
+            }
+
+            close1 = new Button(); close2 = new Button(); close3 = new Button();
+            foreach (Button item in new Button[] { close1, close2, close3 })
+            {
+                item.BackgroundImage = Properties.Resources.cancel;
+                item.Size = new Size(45, 45);
+                item.BackgroundImageLayout = ImageLayout.Zoom;
+                item.MouseHover +=Close_MouseHover;
+                item.MouseLeave +=Close_MouseLeave;
+            }
+
             login = new Button() { Text = "Logi sisse", Size = new Size(200, 50), Font = new Font("Arial", 20) };
             login.MouseHover +=Label_MouseHover;
             login.Click += Login_Click;
@@ -143,46 +162,107 @@ namespace ToodedAB
             tskodu.Click += Tskodu_Click;
 
             Controls.AddRange(new Control[] { MainMenu, nimi, raha, aeg, bonus, pb, level, difference, tsekk, pass, hint, tbNimi, 
-                tbPass, tbHint, eye2, eye1, eye3, login, logout,password, ok});
+                tbPass, tbHint, eye2, eye1, eye3, login, logout,password, ok, ok1, ok2, ok3, close1, close2, close3});
             Controls.AddRange(temp);
             VisibleFalse();
             Initialize(Properties.Settings.Default.Account);
             Tsinfo_Click(new object(), new EventArgs());
         }
 
+        private void OkN_MouseLeave(object sender, EventArgs e)
+        {
+            if (sender is Button a)
+            {
+                a.BackgroundImage = Properties.Resources.ok;
+            }
+        }
+
+        private void OkN_MouseHover(object sender, EventArgs e)
+        {
+            if (sender is Button a)
+            {
+                a.BackgroundImage = Properties.Resources.ok1;
+            }
+        }
+
+        private void Close_MouseLeave(object sender, EventArgs e)
+        {
+            if (sender is Button a)
+            {
+                a.BackgroundImage = Properties.Resources.cancel;
+            }
+        }
+
+        private void Close_MouseHover(object sender, EventArgs e)
+        {
+            if (sender is Button a)
+            {
+                a.BackgroundImage = Properties.Resources.cancel1;
+            }
+        }
+
         private void Ok_MouseClick(object sender, MouseEventArgs e)
         {
             sE.Effect(Properties.Resources.click);
-            if (password.Text==pro)
+            if (password.Text==Password)
             {
-
+                log = true;
+                MessageBox.Show("Edu!", "Logi sisse", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                password.Visible = false;
+                ok.Visible = false;
             }
         }
 
         private void Eye3_MouseClick(object sender, MouseEventArgs e)
         {
             sE.Effect(Properties.Resources.click);
-            if (log)
+            if (ok3.Visible)
             {
-
+                tbHint.Enabled = false;
+                ok3.Visible = false;
+                close3.Visible = false;
+            }
+            else if (log && !ok3.Visible)
+            {
+                tbHint.Enabled = true;
+                ok3.Visible = true;
+                close3.Visible = true;
             }
         }
 
         private void Eye2_MouseClick(object sender, MouseEventArgs e)
         {
             sE.Effect(Properties.Resources.click);
-            if (log)
+            if (ok2.Visible)
             {
-
+                tbPass.Enabled = false;
+                ok2.Visible = false;
+                close2.Visible = false;
+            }
+            else if (log && !ok2.Visible)
+            {
+                tbPass.Enabled = true;
+                ok2.Visible = true;
+                close2.Visible = true;
             }
         }
 
         private void Eye1_MouseClick(object sender, MouseEventArgs e)
         {
             sE.Effect(Properties.Resources.click);
-            if (log)
+            if (ok1.Visible)
             {
-
+                tbNimi.Enabled = false;
+                ok1.Visible = false;
+                close1.Visible = false;
+                c1 = false;
+            }
+            else if (log && !ok1.Visible)
+            {
+                tbNimi.Enabled = true;
+                ok1.Visible = true;
+                close1.Visible = true;
+                c1 = true;
             }
         }
 
@@ -412,7 +492,9 @@ namespace ToodedAB
             nimi.Size = new Size(100, 30);
             Label[] labels = new Label[] { nimi, pass, hint};
             TextBox[] textboxes = new TextBox[] { tbNimi, tbPass, tbHint };
-            Button[] buttons = new Button[] { eye1, eye2, eye3 };
+            Button[] buttons = new Button[] { eye1, eye2, eye3};
+            Button[] buttons1 = new Button[] {ok1, ok2, ok3 };
+            Button[] buttons2 = new Button[] { close1, close2, close3 };
             foreach (Control item in new Control[] { nimi, pass, hint, tbNimi, tbPass, tbHint, eye1, eye2, eye3,login, logout }) //делаю нужные обьекты видимыми
             {
                 item.Visible = true;
@@ -435,9 +517,17 @@ namespace ToodedAB
                 textboxes[i].UseSystemPasswordChar = i > 0 ? true: false;
                 textboxes[i].Enabled = false;
             }
+            for (int i = 0; i < buttons.Length; i++ )
+            {
+                 buttons[i].Location = new Point(textboxes[i].Right+25, textboxes[i].Location.Y-10);
+            }
             for (int i = 0; i < buttons.Length; i++)
             {
-                buttons[i].Location = new Point(textboxes[i].Right+25, textboxes[i].Location.Y-10);
+                buttons1[i].Location = new Point(buttons[i].Right+25, buttons[i].Location.Y);
+            }
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                buttons2[i].Location = new Point(buttons1[i].Right+25, buttons1[i].Location.Y);
             }
             logout.Location = new Point(nimi.Left,nimi.Bottom+500);
             login.Location = new Point(nimi.Left, logout.Bottom+50);
