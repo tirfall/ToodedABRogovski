@@ -13,7 +13,7 @@ namespace ToodedAB
         [STAThread]
         static void Main()
         {
-            Application.Run(new Pood());
+            Application.Run(new KontodAB());
         }
     }
 }

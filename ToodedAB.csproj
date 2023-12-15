@@ -100,6 +100,9 @@
     <Compile Include="Account.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="KontodAB.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -132,6 +135,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="KontodAB.resx">
+      <DependentUpon>KontodAB.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ToodedAB.resx">
       <DependentUpon>ToodedAB.cs</DependentUpon>
     </EmbeddedResource>
