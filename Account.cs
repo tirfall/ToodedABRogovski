@@ -110,6 +110,9 @@ namespace ToodedAB
                 item.MouseHover +=Close_MouseHover;
                 item.MouseLeave +=Close_MouseLeave;
             }
+            close1.MouseClick += Close1_MouseClick;
+            close2.MouseClick += Close2_MouseClick;
+            close3.MouseClick += Close3_MouseClick;
 
             login = new Button() { Text = "Logi sisse", Size = new Size(200, 50), Font = new Font("Arial", 20) };
             login.MouseHover +=Label_MouseHover;
@@ -169,6 +172,21 @@ namespace ToodedAB
             Tsinfo_Click(new object(), new EventArgs());
         }
 
+        private void Close3_MouseClick(object sender, MouseEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Close2_MouseClick(object sender, MouseEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Close1_MouseClick(object sender, MouseEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         private void OkN_MouseLeave(object sender, EventArgs e)
         {
             if (sender is Button a)
@@ -221,12 +239,14 @@ namespace ToodedAB
                 tbHint.Enabled = false;
                 ok3.Visible = false;
                 close3.Visible = false;
+                tbHint.UseSystemPasswordChar = true;
             }
             else if (log && !ok3.Visible)
             {
                 tbHint.Enabled = true;
                 ok3.Visible = true;
                 close3.Visible = true;
+                tbHint.UseSystemPasswordChar = false;
             }
         }
 
@@ -238,12 +258,14 @@ namespace ToodedAB
                 tbPass.Enabled = false;
                 ok2.Visible = false;
                 close2.Visible = false;
+                tbPass.UseSystemPasswordChar = true;
             }
             else if (log && !ok2.Visible)
             {
                 tbPass.Enabled = true;
                 ok2.Visible = true;
                 close2.Visible = true;
+                tbPass.UseSystemPasswordChar = false;
             }
         }
 
@@ -255,14 +277,12 @@ namespace ToodedAB
                 tbNimi.Enabled = false;
                 ok1.Visible = false;
                 close1.Visible = false;
-                c1 = false;
             }
             else if (log && !ok1.Visible)
             {
                 tbNimi.Enabled = true;
                 ok1.Visible = true;
                 close1.Visible = true;
-                c1 = true;
             }
         }
 
