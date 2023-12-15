@@ -338,17 +338,14 @@ namespace ToodedAB
             hint.MouseHover -= hint_MouseHover; //убираю метод с анимацией
             hclick = true;
             //полное завершение анимации
-            await Task.Run(() =>
-            {
-                while (hint.Text.Contains("Vihje"))
-                {
-                    //необходим для корректной работы
+            await Task.Run(() => {
+                while (hint.Text.Contains("Vihje")) 
+                { 
                     Invoke((MethodInvoker)delegate { hint.Text = ""; });
-                }
+                } 
             });
+            password.UseSystemPasswordChar = true;
             hint.ForeColor = Color.Black;
-            await Task.Delay(500);
-            hint.UseSystemPasswordChar = true; //звездочки вместо текста
         }
 
         // при наведении мышки на текстовый ящик с подсказкой
@@ -387,12 +384,14 @@ namespace ToodedAB
                 while (password1.Text.Contains(text))
                 {
                     //Для правильной работы кода
-                    Invoke((MethodInvoker)delegate { password1.Text = ""; });
+                    Invoke((MethodInvoker)delegate {
+                        password1.Text = "";
+                    });
                 }
             });
+            password.UseSystemPasswordChar = true;
             password1.ForeColor = Color.Black;
             await Task.Delay(500);
-            password1.UseSystemPasswordChar = true;
         }
 
         // при наведении мышки на текстовый ящик с паролем (текстовый ящик для регистрации)
@@ -501,12 +500,13 @@ namespace ToodedAB
                 while (password.Text.Contains("Parool"))
                 {
                     //нужен для корректной работы
-                    Invoke((MethodInvoker)delegate { password.Text = ""; });
+                    Invoke((MethodInvoker)delegate { 
+                        password.Text = "";
+                    });
                 }
             });
-            password.ForeColor = Color.Black;
-            await Task.Delay(500);
             password.UseSystemPasswordChar = true;
+            password.ForeColor = Color.Black;
         }
 
         // при наведении мышки на текстовый ящик с паролем

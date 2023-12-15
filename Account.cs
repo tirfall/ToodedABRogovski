@@ -11,7 +11,6 @@ using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ToodedAB.Properties;
 
 namespace ToodedAB
 {
@@ -29,7 +28,6 @@ namespace ToodedAB
         Pood pood;
         Button p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, eye1, eye2, eye3, ok1, ok2, ok3, close1, close2, close3, login, logout, ok;
         bool log, pbclick = false;
-        bool c1, c2, c3 = true;
         static Button[] temp;
         public Stack<int> fails { get; set; }
         public string Nimi { get; private set; }
@@ -100,6 +98,9 @@ namespace ToodedAB
                 item.MouseHover+=OkN_MouseHover;
                 item.MouseLeave+=OkN_MouseLeave;
             }
+            ok1.MouseClick +=Ok1_MouseClick;
+            ok2.MouseClick +=Ok2_MouseClick;
+            ok3.MouseClick +=Ok3_MouseClick;
 
             close1 = new Button(); close2 = new Button(); close3 = new Button();
             foreach (Button item in new Button[] { close1, close2, close3 })
@@ -172,51 +173,92 @@ namespace ToodedAB
             Tsinfo_Click(new object(), new EventArgs());
         }
 
+        private void Ok3_MouseClick(object sender, MouseEventArgs e)
+        {
+            command = new SqlCommand("UPDATE Account SET Hint=@hint WHERE Username=@nimiOR", connect);
+            connect.Open();
+            command.Parameters.AddWithValue("@hint", tbHint.Text);
+            command.Parameters.AddWithValue("@nimiOR", Properties.Settings.Default.Account);
+            command.ExecuteNonQuery();
+            connect.Close();
+            MessageBox.Show("Konto moodustud", "Edu!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Eye3_MouseClick(sender, e);
+            Initialize(tbNimi.Text);
+            GetInfo();
+            GetDiscount();
+        }
+
+        private void Ok2_MouseClick(object sender, MouseEventArgs e)
+        {
+            command = new SqlCommand("UPDATE Account SET Password=@pass WHERE Username=@nimiOR", connect);
+            connect.Open();
+            command.Parameters.AddWithValue("@pass", tbPass.Text);
+            command.Parameters.AddWithValue("@nimiOR", Properties.Settings.Default.Account);
+            command.ExecuteNonQuery();
+            connect.Close();
+            MessageBox.Show("Konto moodustud", "Edu!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Eye2_MouseClick(sender, e);
+            GetInfo();
+            GetDiscount();
+        }
+
+        private void Ok1_MouseClick(object sender, MouseEventArgs e)
+        {
+            command = new SqlCommand("UPDATE Account SET Username=@nimi WHERE Username=@nimiOR", connect);
+            connect.Open();
+            command.Parameters.AddWithValue("@nimi", tbNimi.Text);
+            command.Parameters.AddWithValue("@nimiOR", Properties.Settings.Default.Account);
+            command.ExecuteNonQuery();
+            connect.Close();
+            MessageBox.Show("Konto moodustud", "Edu!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Properties.Settings.Default.Account = tbNimi.Text;
+            Properties.Settings.Default.Save();
+            Eye1_MouseClick(sender, e); 
+            Initialize(tbNimi.Text);
+            GetInfo();
+            GetDiscount();
+        }
+
         private void Close3_MouseClick(object sender, MouseEventArgs e)
         {
-            throw new NotImplementedException();
+            tbHint.Text = Hint;
+            Eye3_MouseClick(sender, e);
         }
 
         private void Close2_MouseClick(object sender, MouseEventArgs e)
         {
-            throw new NotImplementedException();
+            tbPass.Text = Password;
+            Eye2_MouseClick(sender, e);
         }
 
         private void Close1_MouseClick(object sender, MouseEventArgs e)
         {
-            throw new NotImplementedException();
+            tbNimi.Text = Nimi;
+            Eye1_MouseClick(sender, e);
         }
 
         private void OkN_MouseLeave(object sender, EventArgs e)
         {
             if (sender is Button a)
-            {
                 a.BackgroundImage = Properties.Resources.ok;
-            }
         }
 
         private void OkN_MouseHover(object sender, EventArgs e)
         {
             if (sender is Button a)
-            {
                 a.BackgroundImage = Properties.Resources.ok1;
-            }
         }
 
         private void Close_MouseLeave(object sender, EventArgs e)
         {
             if (sender is Button a)
-            {
                 a.BackgroundImage = Properties.Resources.cancel;
-            }
         }
 
         private void Close_MouseHover(object sender, EventArgs e)
         {
             if (sender is Button a)
-            {
                 a.BackgroundImage = Properties.Resources.cancel1;
-            }
         }
 
         private void Ok_MouseClick(object sender, MouseEventArgs e)
@@ -313,6 +355,7 @@ namespace ToodedAB
             password.BackColor = Color.White;
             password.MouseHover -= password_MouseHover; //убираю метод анимации чтобы не мешал пользователю
             pbclick = true;
+            password.UseSystemPasswordChar = true;
             //метод для полной очистки анимации
             await Task.Run(() =>
             {
@@ -378,15 +421,6 @@ namespace ToodedAB
             }
         }
 
-
-        //доделать
-        //
-        //
-        //
-        //
-        //
-        //
-        //
         private async void Eye_MouseHover(object sender, EventArgs e)
         {
             Bitmap[] animate = new Bitmap[] {Properties.Resources.eye, Properties.Resources.eye1, Properties.Resources.eye2,
