@@ -16,7 +16,7 @@ namespace ToodedAB
 {
     public partial class Settings : Form
     {
-        ToodedAB tab;
+        AdminPanel adminPanel;
         Pood pood;
         Label home, sound, account, lsound, login, fpass,reg,log;
         TextBox username, password, password1, hint;
@@ -320,11 +320,14 @@ namespace ToodedAB
             if (i)
                 return;
             //Добавляю аккаунт в базу данных
-            command = new SqlCommand("INSERT INTO Account (Username,Password,Hint) VALUES (@user,@pass,@hint)", connect);
+            command = new SqlCommand("INSERT INTO Account (Username,Password,Hint,Time,Money,Cashback) VALUES (@user,@pass,@hint,@time,@mon,@cash)", connect);
             connect.Open();
             command.Parameters.AddWithValue("@user", username.Text);
             command.Parameters.AddWithValue("@pass", password.Text);
             command.Parameters.AddWithValue("@hint", hint.Text);
+            command.Parameters.AddWithValue("@time", DateTime.Now);
+            command.Parameters.AddWithValue("@mon", 0);
+            command.Parameters.AddWithValue("@cash", 0);
             command.ExecuteNonQuery();
             connect.Close();
             MessageBox.Show("Konto loodud", "Edu!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -429,9 +432,9 @@ namespace ToodedAB
                 sE.Stop();
                 s.Stop();
                 this.Hide();
-                tab = new ToodedAB();
-                tab.Closed += (s, args) => this.Close();
-                tab.Show();
+                adminPanel = new AdminPanel();
+                adminPanel.Closed += (s, args) => this.Close();
+                adminPanel.Show();
             }
             GetAccounts(); //получаю словарь с аккаунтами
             bool i = false;

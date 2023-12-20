@@ -20,10 +20,11 @@ namespace ToodedAB
         SqlConnection connect = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\AppData\Tooded_DB.mdf;Integrated Security=True");
         SqlDataAdapter adapter_toode, adapter_kategooria;
         SqlCommand command;
+        AdminPanel adminPanel;
         ComboBox cb1, cb4, cb5;
         TextBox cb2,cb3;
         Label lb1, lb2, lb3, lb4, lb5;
-        Button btn1, btn2, btn3, btn4, btn5, btn6;
+        Button btn1, btn2, btn3, btn4, btn5, btn6,btn7;
         Dictionary<string, int> kategooria;
         Dictionary<int, string> kategooriaRev;
         int SelectId;
@@ -56,13 +57,23 @@ namespace ToodedAB
             btn5.Click += Btn5_Click;
             btn6 = new Button() { Text = "Kustuta", Location = new Point(btn5.Right + 15, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
             btn6.Click += Btn6_Click;
+            btn7= new Button() { Text = "Admin panel", Location = new Point(btn6.Right+15, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
+            btn7.Click+=Btn7_Click;
             pb = new PictureBox() { Location = new Point(btn5.Right-btn5.Width/2, cb1.Top-10), Size = new Size(200, 200), BackColor=Color.Gray };
             ofd = new OpenFileDialog() { FileName = "Valige pildifail", Multiselect=true, InitialDirectory=Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Title = "Avage pildifail", Filter = "Image Files|*.jpeg; *.jpg; *.gif; *.bmp; *.png; *.tiff; *.icon; *.emf; *.wmf" };
             save = new SaveFileDialog() { InitialDirectory=Path.GetFullPath(@"..\..\Images") };
             dgv.CellClick +=Dgv_CellClick;
             cb1.SelectedValueChanged+=Cb_SelectedValueChanged;
-            this.Controls.AddRange(new Control[] { lb1, lb2, lb3, lb4, lb5, cb1, cb2, cb3, cb4, cb5, btn1, btn2, btn3, btn4, btn5, btn6, pb });
+            this.Controls.AddRange(new Control[] { lb1, lb2, lb3, lb4, lb5, cb1, cb2, cb3, cb4, cb5, btn1, btn2, btn3, btn4, btn5, btn6, btn7, pb });
             Naita();
+        }
+
+        private void Btn7_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            adminPanel = new AdminPanel();
+            adminPanel.Closed += (s, args) => this.Close();
+            adminPanel.Show();
         }
 
         private void Cb_SelectedValueChanged(object sender, EventArgs e)
@@ -96,44 +107,64 @@ namespace ToodedAB
         //при нажатии на клетку в таблице
         private void Dgv_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            int i = 0;
-            foreach (Control item in new Control[] { cb1, cb2, cb3, cb4, cb5 })
+            try
             {
-                item.Text = dgv.Rows[e.RowIndex].Cells[i].Value.ToString();
-                i++;
-            }
-            NaitaPilt();
+                if (dgv.Rows[e.RowIndex].Cells[0].Value.ToString()== "")
+                {
+                    cb1.Text = "";
+                    cb2.Text = "0";
+                    cb3.Text = "0";
+                    cb4.Text = "";
+                    cb5.Text = "";
+                }
+                else
+                {
+                    int i = 0;
+                    foreach (Control item in new Control[] { cb1, cb2, cb3, cb4, cb5 })
+                    {
+                        item.Text = dgv.Rows[e.RowIndex].Cells[i].Value.ToString();
+                        i++;
+                    }
+                    NaitaPilt();
+                }
+            } catch (Exception) { return; }
         }
 
         private void Btn5_Click(object sender, EventArgs e)
         {
-            int num = SelectId;
-            command = new SqlCommand("UPDATE Toodetable SET Toodenimetus=@nim, Kogus=@kogus, Hind=@hind,Pilt=@img,Kategooriad=@kat WHERE Id=@id", connect);
-            connect.Open();
-            command.Parameters.AddWithValue("@id", num);
-            command.Parameters.AddWithValue("@nim", cb1.Text);
-            command.Parameters.AddWithValue("@kogus", cb2.Text);
-            command.Parameters.AddWithValue("@hind", Convert.ToDouble(cb3.Text));
-            command.Parameters.AddWithValue("@kat", kategooria[cb5.Text]);
-            command.Parameters.AddWithValue("@img", cb4.Text);
-            command.ExecuteNonQuery();
-            connect.Close();
-            Naita();
+            if (ControlInsert(false))
+            {
+                int num = SelectId;
+                command = new SqlCommand("UPDATE Toodetable SET Toodenimetus=@nim, Kogus=@kogus, Hind=@hind,Pilt=@img,Kategooriad=@kat WHERE Id=@id", connect);
+                connect.Open();
+                command.Parameters.AddWithValue("@id", num);
+                command.Parameters.AddWithValue("@nim", cb1.Text);
+                command.Parameters.AddWithValue("@kogus", cb2.Text);
+                command.Parameters.AddWithValue("@hind", Convert.ToDouble(cb3.Text));
+                command.Parameters.AddWithValue("@kat", kategooria[cb5.Text]);
+                command.Parameters.AddWithValue("@img", cb4.Text);
+                command.ExecuteNonQuery();
+                connect.Close();
+                Naita();
+            }
         }
 
         private void Btn4_Click(object sender, EventArgs e)
         {
-            command = new SqlCommand("INSERT INTO Toodetable (Toodenimetus,Kogus,Hind,Pilt,Kategooriad) VALUES (@nim,@kogus,@hind,@img,@kat)", connect);
-            connect.Open();
-            command.Parameters.AddWithValue("@nim", cb1.Text);
-            command.Parameters.AddWithValue("@kogus", cb2.Text);
-            command.Parameters.AddWithValue("@hind", Convert.ToDouble(cb3.Text));
-            command.Parameters.AddWithValue("@kat", kategooria[cb5.Text]);
-            int i = kategooria[cb5.Text];
-            command.Parameters.AddWithValue("@img", cb4.Text);
-            command.ExecuteNonQuery();
-            connect.Close();
-            Naita();
+            if (ControlInsert(true))
+            {
+                command = new SqlCommand("INSERT INTO Toodetable (Toodenimetus,Kogus,Hind,Pilt,Kategooriad) VALUES (@nim,@kogus,@hind,@img,@kat)", connect);
+                connect.Open();
+                command.Parameters.AddWithValue("@nim", cb1.Text);
+                command.Parameters.AddWithValue("@kogus", cb2.Text);
+                command.Parameters.AddWithValue("@hind", Convert.ToDouble(cb3.Text));
+                command.Parameters.AddWithValue("@kat", kategooria[cb5.Text]);
+                int i = kategooria[cb5.Text];
+                command.Parameters.AddWithValue("@img", cb4.Text);
+                command.ExecuteNonQuery();
+                connect.Close();
+                Naita();
+            }
         }
 
         private void Btn3_Click(object sender, EventArgs e)
@@ -174,12 +205,15 @@ namespace ToodedAB
 
         private void Btn1_Click(object sender, EventArgs e)
         {
-            command = new SqlCommand("INSERT INTO Kategooria (Kategooria_nimetus) VALUES (@kat)", connect);
-            connect.Open();
-            command.Parameters.AddWithValue("@kat", cb5.Text);
-            command.ExecuteNonQuery();
-            connect.Close();
-            Naita();
+            if (ControlInsertKat())
+            {
+                command = new SqlCommand("INSERT INTO Kategooria (Kategooria_nimetus) VALUES (@kat)", connect);
+                connect.Open();
+                command.Parameters.AddWithValue("@kat", cb5.Text);
+                command.ExecuteNonQuery();
+                connect.Close();
+                Naita();
+            }
         }
 
         //Обновить текстовый ящик для категории
@@ -301,28 +335,55 @@ namespace ToodedAB
             catch { }
         }
 
-        private bool ControlInsert()
+        private bool ControlInsertKat()
+        {
+            cb5.BackColor= Color.White;
+            List<bool> b = new List<bool>();
+            if (cb5.Items.Contains(cb5.Text) || cb5.Text=="" || cb5.Text.Length<3)
+            {
+                b.Add(false);
+                cb5.BackColor= Color.Red;
+            }
+            return !b.Any(c => c == false);
+        }
+
+        private bool ControlInsert(bool c)
         {
             foreach (Control item in new Control[] {cb1,cb2,cb3,cb4,cb5 })
                 item.BackColor = Color.White;
             List<bool> b = new List<bool>();
-            if (cb1.Items.Contains(cb1.Text) || cb1.Text=="" || cb1.Text.Length<3)
+            if (c)
             {
-                b.Add(false);
-                cb1.BackColor= Color.Red;
-            }
-            int num1;
-            try
-            {
-                num1 = Convert.ToInt32(cb2.Text);
-                if (num1<0)
+                if (cb1.Items.Contains(cb1.Text) || cb1.Text.Length<4)
                 {
+                    b.Add(false);
+                    cb1.BackColor= Color.Red;
                 }
             }
-            catch (Exception)
+            int num1;
+            foreach (TextBox item in new TextBox[] {cb2,cb3})
             {
+                try
+                {
+                    num1 = Convert.ToInt32(item.Text);
+                    if (num1<0)
+                    {
+                        b.Add(false);
+                        item.BackColor= Color.Red;
+                    }
+                }
+                catch (Exception)
+                {
+                    b.Add(false);
+                    item.BackColor= Color.Red;
+                }
             }
-            return !b.Any(c => c == false);
+            if (!cb5.Items.Contains(cb5.Text) || cb5.Text=="")
+            {
+                b.Add(false);
+                cb5.BackColor= Color.Red;
+            }
+            return !b.Any(f => f == false);
         }
     }
 }

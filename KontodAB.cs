@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Security.Cryptography;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace ToodedAB
 {
@@ -20,7 +21,8 @@ namespace ToodedAB
         ComboBox cb1;
         TextBox cb2, cb3, cb4, cb5, cb6;
         Label lb1, lb2, lb3, lb4, lb5, lb6;
-        Button btn1, btn2, btn3, btn4, btn5, btn6;
+        Button btn1, btn2, btn3, btn4, btn5, btn6,btn7;
+        AdminPanel adminPanel;
         int SelectId;
         DataGridView dgv;
         string text;
@@ -31,7 +33,8 @@ namespace ToodedAB
 
         public KontodAB()
         {
-            InitializeComponent(); 
+            InitializeComponent();
+            Text = "KontodAB";
             lb1 = new Label() { Text = "Kasutajanimi", Location = new Point(20, 20), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
             lb2 = new Label() { Text = "Parool", Location = new Point(20, lb1.Location.Y + 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
             lb3 = new Label() { Text = "Vihje", Location = new Point(20, lb2.Location.Y + 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
@@ -56,10 +59,20 @@ namespace ToodedAB
             btn5.Click += Btn5_Click;
             btn6 = new Button() { Text = "Juhuslik vihje", Location = new Point(btn1.Right + 100, btn2.Location.Y + 40), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
             btn6.Click += Btn6_Click;
+            btn7= new Button() { Text = "Admin panel", Location = new Point(btn1.Right+100, btn3.Location.Y+40), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
+            btn7.Click+=Btn7_Click;
             dgv.CellClick += Dgv_CellClick;
             cb1.SelectedValueChanged += Cb_SelectedValueChanged;
-            this.Controls.AddRange(new Control[] { lb1, lb2, lb3, lb4, lb5, lb6, cb1, cb2, cb3, cb4, cb5, cb6, btn1, btn2, btn3, btn4, btn5, btn6 });
+            this.Controls.AddRange(new Control[] { lb1, lb2, lb3, lb4, lb5, lb6, cb1, cb2, cb3, cb4, cb5, cb6, btn1, btn2, btn3, btn4, btn5, btn6,btn7 });
             Naita();
+        }
+
+        private void Btn7_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            adminPanel = new AdminPanel();
+            adminPanel.Closed += (s, args) => this.Close();
+            adminPanel.Show();
         }
 
         //Рандомная генерация текста для текстовых ящиков 
@@ -140,17 +153,49 @@ namespace ToodedAB
 
         private void Btn3_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (ControlInsert(false))
+            {
+                command = new SqlCommand("UPDATE Account SET Username=@user, Password=@pass, Hint=@hint,Time=@time,Money=@mon,Cashback=@cash WHERE Id=@id", connect);
+                connect.Open();
+                command.Parameters.AddWithValue("@id", SelectId);
+                command.Parameters.AddWithValue("@user", cb1.Text);
+                command.Parameters.AddWithValue("@pass", cb2.Text);
+                command.Parameters.AddWithValue("@hint", cb3.Text);
+                command.Parameters.AddWithValue("@time", Convert.ToDateTime(cb4.Text));
+                command.Parameters.AddWithValue("@mon", Convert.ToInt32(cb5.Text));
+                command.Parameters.AddWithValue("@cash", Convert.ToInt32(cb6.Text));
+                command.ExecuteNonQuery();
+                connect.Close();
+                Naita();
+            }
         }
 
         private void Btn2_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            command = new SqlCommand("DELETE FROM Account WHERE Username=@user", connect);
+            connect.Open();
+            command.Parameters.AddWithValue("@user", cb1.Text);
+            command.ExecuteNonQuery();
+            connect.Close();
+            Naita();
         }
 
         private void Btn1_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (ControlInsert(true))
+            {
+                command = new SqlCommand("INSERT INTO Account (Username,Password,Hint,Time,Money,Cashback) VALUES (@user,@pass,@hint,@time,@mon,@cash)", connect);
+                connect.Open();
+                command.Parameters.AddWithValue("@user", cb1.Text);
+                command.Parameters.AddWithValue("@pass", cb2.Text);
+                command.Parameters.AddWithValue("@hint", cb3.Text);
+                command.Parameters.AddWithValue("@time", Convert.ToDateTime(cb4.Text));
+                command.Parameters.AddWithValue("@mon", Convert.ToInt32(cb5.Text));
+                command.Parameters.AddWithValue("@cash", Convert.ToInt32(cb6.Text));
+                command.ExecuteNonQuery();
+                connect.Close();
+                Naita();
+            }
         }
 
         private void NaitaAndmed()
@@ -204,6 +249,65 @@ namespace ToodedAB
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).EndInit();
             this.ResumeLayout(false);
 
+        }
+
+        private bool ControlInsert(bool c)
+        {
+            foreach (Control item in new Control[] { cb1, cb2, cb3, cb4, cb5, cb6 })
+                item.BackColor = Color.White;
+            List<bool> b = new List<bool>();
+            if (c)
+            {
+                if (cb1.Items.Contains(cb1.Text) || cb1.Text.Length<4)
+                {
+                    b.Add(false);
+                    cb1.BackColor= Color.Red;
+                }
+            }
+            if (cb2.Text.Length<4)
+            {
+                b.Add(false);
+                cb2.BackColor= Color.Red;
+            }
+            if (cb3.Text.Length<4)
+            {
+                b.Add(false);
+                cb3.BackColor= Color.Red;
+            }
+            DateTime dt;
+            try
+            {
+                dt = Convert.ToDateTime(cb4.Text);
+                if ((int)Math.Round((Convert.ToDateTime(DateTime.Now) - dt).TotalDays, 0)<0)
+                {
+                    b.Add(false);
+                    cb4.BackColor= Color.Red;
+                }
+            }
+            catch (Exception)
+            {
+                b.Add(false);
+                cb4.BackColor= Color.Red;
+            }
+            int num1;
+            foreach (TextBox item in new TextBox[] {cb5,cb6})
+            {
+                try
+                {
+                    num1 = Convert.ToInt32(item.Text);
+                    if (num1<0)
+                    {
+                        b.Add(false);
+                        item.BackColor= Color.Red;
+                    }
+                }
+                catch (Exception)
+                {
+                    b.Add(false);
+                    item.BackColor= Color.Red;
+                }
+            }
+            return !b.Any(f => f == false);
         }
     }
 }
