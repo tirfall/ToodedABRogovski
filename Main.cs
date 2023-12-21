@@ -1,5 +1,4 @@
-﻿using Aspose.Pdf.Operators;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -22,7 +21,7 @@ namespace ToodedAB
         Panel p;
         TreeNode kassa;
         Pood pood;
-        Dictionary<string, int> dic; 
+        Sound s, sE;
         public Main()
         {
             this.Width = 1200;
@@ -48,6 +47,10 @@ namespace ToodedAB
             tree.Nodes.Add(tn);
             Controls.AddRange(new Control[] {tree,p });
 
+            sE = new Sound();
+            s = new Sound();
+            s.Music();
+
             NaitaKat();
             TeineNode();
         }
@@ -61,10 +64,13 @@ namespace ToodedAB
         {
             if (e.Node.Text == "Kassa")
             {
-
+                sE.Effect(Properties.Resources.click);
             }
             else if (e.Node.Text == "Kodu")
             {
+                sE.Effect(Properties.Resources.click);
+                sE.Stop();
+                s.Stop();
                 this.Hide();
                 pood = new Pood();
                 pood.Closed += (s, args) => this.Close();
@@ -72,6 +78,7 @@ namespace ToodedAB
             }
             else if (true)
             {
+                sE.Effect(Properties.Resources.click);
                 connect.Open();
                 adapter_kategooria = new SqlDataAdapter("SELECT Id,Kategooria_nimetus FROM Kategooria", connect);
                 DataTable dt_kat = new DataTable();
@@ -89,7 +96,7 @@ namespace ToodedAB
                         int i = 0;
                         foreach (DataRow item1 in dt_tod.Rows)
                         {
-                            Button btn = new Button() { Size = new Size(200, 300) };
+                            UserControl btn = new UserControl() { Size = new Size(200, 300) };
                             if (i % 2 == 0)
                                 btn.Location = new Point((i - 1) >= 0 ? x : 55, 55);
                             else
@@ -118,21 +125,23 @@ namespace ToodedAB
             }
         }
 
-        private void C_Click(object sender, EventArgs e)
+        private async void C_Click(object sender, EventArgs e)
         {
             if (sender is Control item)
             {
-                Properties.Settings.Default.Tooded += item.Tag+",";
+                sE.Effect(Properties.Resources.click);
+                Properties.Settings.Default.Tooded += item.Tag + ",";
                 Properties.Settings.Default.Save();
-                if (!kassa.Nodes.Contains(new TreeNode(item.Tag.ToString())))
+                kassa.Nodes.Add(item.Tag.ToString());
+                foreach (Control item1 in p.Controls)
                 {
-                    kassa.Nodes.Add(item.Tag.ToString());
-                }
-                else
-                {
-                    foreach (string item1 in kassa.Nodes)
+                    if (item1 is UserControl uc && uc.Tag == item.Tag)
                     {
-
+                        uc.BackColor = Color.Green;
+                        uc.ForeColor = Color.White;
+                        await Task.Delay(100);
+                        uc.BackColor = Color.White;
+                        uc.ForeColor = Color.Black;
                     }
                 }
             }
