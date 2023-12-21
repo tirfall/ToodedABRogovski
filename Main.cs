@@ -1,5 +1,4 @@
-﻿using Aspose.Pdf.Operators;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -18,7 +17,7 @@ namespace ToodedAB
         TreeNode tn = new TreeNode("Pood");
         SqlConnection connect = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\AppData\Tooded_DB.mdf;Integrated Security=True");
         SqlDataAdapter adapter_toode, adapter_kategooria;
-        Button btn1,btn2,btn3,btn4;
+        Panel p;
         public Main()
         {
             this.Width = 1200;
@@ -32,15 +31,20 @@ namespace ToodedAB
             tree.BorderStyle = BorderStyle.Fixed3D;
             tree.AfterSelect +=Tree_AfterSelect;
 
-            NaitaKat();
-
-            btn1 = new Button() { Size=new Size(200,300), Location = new Point(tree.Right+55,55)};
-            btn2 = new Button() { Size=new Size(200, 300), Location = new Point(btn1.Right+55, 55) };
-            btn3 = new Button() { Size=new Size(200, 300), Location = new Point(btn2.Right+55, 55) };
-            btn4 = new Button() { Size=new Size(200, 300), Location = new Point(btn3.Right+55, 55) };
-
+            p = new Panel() {Size=new Size(1100,850),Location=new Point(tree.Right), BackgroundImage = Properties.Resources.bg };
+            p.AutoScroll = true;
+            p.VerticalScroll.Visible = false;
+            p.VerticalScroll.Enabled = false;
+            p.Scroll += P_Scroll;
             tree.Nodes.Add(tn);
-            Controls.AddRange(new Control[] {tree,btn1,btn2,btn3,btn4 });
+            Controls.AddRange(new Control[] {tree,p });
+
+            NaitaKat();
+        }
+
+        private async void P_Scroll(object sender, ScrollEventArgs e)
+        {
+            await Task.Run(() => { p.BackgroundImage = Properties.Resources.bg; });
         }
 
         private void Tree_AfterSelect(object sender, TreeViewEventArgs e)
@@ -53,13 +57,32 @@ namespace ToodedAB
             {
                 if (e.Node.Text == item["Kategooria_nimetus"].ToString())
                 {
+                    p.Controls.Clear();
                     int id = Convert.ToInt32(item["Id"]);
-                    adapter_toode = new SqlDataAdapter($"SELECT Toodenimetus, Kogus, Hind, Pilt, Kategooriad WHERE Kategooriad = '{id}'", connect);
+                    adapter_toode = new SqlDataAdapter($"SELECT Toodenimetus, Kogus, Hind, Pilt FROM Toodetable WHERE Kategooriad = '{id}'", connect);
                     DataTable dt_tod = new DataTable();
                     adapter_toode.Fill(dt_tod);
+                    int x = 55;
+                    int i = 0;
                     foreach (DataRow item1 in dt_tod.Rows)
                     {
-                        
+                        Button btn = new Button() { Size = new Size(200, 300) };
+                        if (i % 2 == 0)
+                        {
+                            btn.Location = new Point((i - 1) >= 0 ? x : 55, 55);
+                        }
+                        else
+                        {
+                            btn.Location = new Point(x, 400);
+                            x += 255;
+                        }
+                        PictureBox pb = new PictureBox() { Size = new Size(150, 150), Location = new Point(20, 20), BackColor = Color.Gray };
+                        Label nimi = new Label() { Size = new Size(140, 25), Location = new Point(50, 180), Text = item1["Toodenimetus"].ToString(), Font = new Font("Arial", 15) };
+                        Label hind = new Label() { Size = new Size(140, 25), Location = new Point(50, 210), Text = "Hind: " +item1["Hind"].ToString()+"$", Font = new Font("Arial", 15) };
+                        Label kogus = new Label() { Size = new Size(140, 25), Location = new Point(50, 240), Text = "Kogus: " + item1["Kogus"].ToString(), Font = new Font("Arial", 15) };
+                        btn.Controls.AddRange(new Control[] {pb,nimi,hind,kogus});
+                        p.Controls.Add(btn);
+                        i++;
                     }
                 }
                 tree.SelectedNode = null;
@@ -78,6 +101,7 @@ namespace ToodedAB
                 tn.Nodes.Add(item["Kategooria_nimetus"].ToString());
             }
             connect.Close();
+            Tree_AfterSelect(new object(), new TreeViewEventArgs(new TreeNode(dt_kat.Rows[0]["Kategooria_nimetus"].ToString())));
         }
     }
 }
