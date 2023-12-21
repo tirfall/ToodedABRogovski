@@ -23,6 +23,9 @@ namespace ToodedAB
             this.Text = "VS Pood | Vihane Sipelgas Peamenüü";
             this.BackgroundImage = Properties.Resources.bg;
             this.Icon = Properties.Resources.Icon;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             title = new Label() { Font = new Font("Times New Roman", 60, FontStyle.Italic), Text = "Vihane Sipelgas", AutoSize = true, BackColor = Color.Transparent, 
                 ForeColor = Color.White, BorderStyle = BorderStyle.Fixed3D};
             title.Location = Location = new Point((this.Width-600) / 2, 30);

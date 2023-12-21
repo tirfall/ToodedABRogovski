@@ -46,6 +46,9 @@ namespace ToodedAB
             this.Text = "VS Pood | Vihane Sipelgas Konto";
             this.BackgroundImage = Properties.Resources.bg;
             this.Icon = Properties.Resources.Icon;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
 
             MainMenu = new MenuStrip() { Location = new Point(0, 0) };
             tsinfo = new ToolStripMenuItem("Info");

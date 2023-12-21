@@ -106,6 +106,12 @@
     <Compile Include="AdminPanel.Designer.cs">
       <DependentUpon>AdminPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Cassa.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Cassa.Designer.cs">
+      <DependentUpon>Cassa.cs</DependentUpon>
+    </Compile>
     <Compile Include="KontodAB.cs">
       <SubType>Form</SubType>
     </Compile>

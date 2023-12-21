@@ -19,6 +19,9 @@ namespace ToodedAB
         public AdminPanel()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             Text = "Admin Panel";
             btn1 = new Button() { Size=new Size(200,200), Text="ToodedAB", Location = new Point(100,150), Font = new Font("Arial",20), BackColor = Color.Gray, ForeColor = Color.White };
             btn2 = new Button() { Size=new Size(200, 200), Text="KontodAB", Location = new Point(btn1.Right+96, 150), Font = new Font("Arial", 20), BackColor = Color.Gray, ForeColor = Color.White };

@@ -38,6 +38,9 @@ namespace ToodedAB
             this.Text = "VS Pood | Vihane Sipelgas Sätted";
             this.BackgroundImage = Properties.Resources.bg;
             this.Icon = Properties.Resources.Icon;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
 
             bmp = new Bitmap(Properties.Resources.house, 200, 200);
             home = new Label() { BorderStyle = BorderStyle.Fixed3D, Image = bmp, Size = new Size(200,200), BackColor = Color.Transparent, Location = new Point(10,10)};

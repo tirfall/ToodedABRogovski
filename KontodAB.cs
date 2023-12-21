@@ -34,7 +34,10 @@ namespace ToodedAB
         public KontodAB()
         {
             InitializeComponent();
-            Text = "KontodAB";
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Text = "KontodAB";
             lb1 = new Label() { Text = "Kasutajanimi", Location = new Point(20, 20), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
             lb2 = new Label() { Text = "Parool", Location = new Point(20, lb1.Location.Y + 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
             lb3 = new Label() { Text = "Vihje", Location = new Point(20, lb2.Location.Y + 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
