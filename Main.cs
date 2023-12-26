@@ -5,6 +5,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,10 +20,13 @@ namespace ToodedAB
         TreeNode tn = new TreeNode("Pood");
         SqlConnection connect = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\AppData\Tooded_DB.mdf;Integrated Security=True");
         SqlDataAdapter adapter_toode, adapter_kategooria;
+        SqlCommand command;
         Panel p;
         TreeNode kassa;
         Pood pood;
         Sound s, sE;
+        TreeViewEventArgs Selected;
+        Dictionary<string, int> tooded = new Dictionary<string, int>();
         public Main()
         {
             this.Width = 1200;
@@ -33,10 +38,11 @@ namespace ToodedAB
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             Properties.Settings.Default.Tooded = "";
-
             tree = new TreeView();
+            tree.Font = new Font("Arial", 16);
             tree.Dock = DockStyle.Left;
             tree.BorderStyle = BorderStyle.Fixed3D;
+            tree.Width = 150;
             tree.AfterSelect +=Tree_AfterSelect;
 
             p = new Panel() {Size=new Size(1100,850),Location=new Point(tree.Right), BackgroundImage = Properties.Resources.bg };
@@ -53,6 +59,7 @@ namespace ToodedAB
 
             NaitaKat();
             TeineNode();
+            Kassa();
         }
 
         private async void P_Scroll(object sender, ScrollEventArgs e)
@@ -79,72 +86,136 @@ namespace ToodedAB
             else if (true)
             {
                 sE.Effect(Properties.Resources.click);
-                connect.Open();
-                adapter_kategooria = new SqlDataAdapter("SELECT Id,Kategooria_nimetus FROM Kategooria", connect);
-                DataTable dt_kat = new DataTable();
-                adapter_kategooria.Fill(dt_kat);
-                foreach (DataRow item in dt_kat.Rows)
+                Tooded(e);
+            }
+            tree.SelectedNode = null;
+        }
+
+        private void Tooded(TreeViewEventArgs e)
+        {
+            connect.Open();
+            adapter_kategooria = new SqlDataAdapter("SELECT Id,Kategooria_nimetus FROM Kategooria", connect);
+            DataTable dt_kat = new DataTable();
+            adapter_kategooria.Fill(dt_kat);
+            foreach (DataRow item in dt_kat.Rows)
+            {
+                if (e.Node.Text == item["Kategooria_nimetus"].ToString())
                 {
-                    if (e.Node.Text == item["Kategooria_nimetus"].ToString())
+                    p.Controls.Clear();
+                    int id = Convert.ToInt32(item["Id"]);
+                    adapter_toode = new SqlDataAdapter($"SELECT Toodenimetus, Kogus, Hind, Pilt FROM Toodetable WHERE Kategooriad = '{id}'", connect);
+                    DataTable dt_tod = new DataTable();
+                    adapter_toode.Fill(dt_tod);
+                    int x = 55;
+                    int i = 0;
+                    foreach (DataRow item1 in dt_tod.Rows)
                     {
-                        p.Controls.Clear();
-                        int id = Convert.ToInt32(item["Id"]);
-                        adapter_toode = new SqlDataAdapter($"SELECT Toodenimetus, Kogus, Hind, Pilt FROM Toodetable WHERE Kategooriad = '{id}'", connect);
-                        DataTable dt_tod = new DataTable();
-                        adapter_toode.Fill(dt_tod);
-                        int x = 55;
-                        int i = 0;
-                        foreach (DataRow item1 in dt_tod.Rows)
+                        UserControl btn = new UserControl() { Size = new Size(200, 300) };
+                        if (i % 2 == 0)
+                            btn.Location = new Point((i - 1) >= 0 ? x : 55, 55);
+                        else
                         {
-                            UserControl btn = new UserControl() { Size = new Size(200, 300) };
-                            if (i % 2 == 0)
-                                btn.Location = new Point((i - 1) >= 0 ? x : 55, 55);
-                            else
-                            {
-                                btn.Location = new Point(x, 400);
-                                x += 255;
-                            }
-                            PictureBox pb = new PictureBox() { Size = new Size(150, 150), Location = new Point(20, 20), BackColor = Color.Gray };
-                            Label nimi = new Label() { Size = new Size(140, 25), Location = new Point(50, 180), Text = item1["Toodenimetus"].ToString(), Font = new Font("Arial", 15) };
-                            Label hind = new Label() { Size = new Size(140, 25), Location = new Point(50, 210), Text = "Hind: " +item1["Hind"].ToString()+"$", Font = new Font("Arial", 15) };
-                            Label kogus = new Label() { Size = new Size(140, 25), Location = new Point(50, 240), Text = "Kogus: " + item1["Kogus"].ToString(), Font = new Font("Arial", 15) };
-                            btn.Name = nimi.Text;
-                            btn.Controls.AddRange(new Control[] {pb,nimi,hind,kogus});
-                            foreach (Control item2 in new Control[] {btn,pb,nimi,hind,kogus})
-                            {
-                                item2.Click+=C_Click;
-                                item2.Tag = nimi.Text;
-                            }
-                            p.Controls.Add(btn);
-                            i++;
+                            btn.Location = new Point(x, 400);
+                            x += 255;
                         }
+                        PictureBox pb = new PictureBox() { Size = new Size(150, 150), Location = new Point(20, 20), BackColor = Color.Gray };
+                        Label nimi = new Label() { Size = new Size(140, 25), Location = new Point(50, 180), Text = item1["Toodenimetus"].ToString(), Font = new Font("Arial", 15) };
+                        Label hind = new Label() { Size = new Size(140, 25), Location = new Point(50, 210), Text = "Hind: " + item1["Hind"].ToString() + "$", Font = new Font("Arial", 15) };
+                        Label kogus = new Label() { Size = new Size(140, 25), Location = new Point(50, 240), Text = "Kogus: " + item1["Kogus"].ToString(), Font = new Font("Arial", 15) };
+                        kogus.Name = "kogus";
+                        btn.Name = nimi.Text;
+                        btn.Controls.AddRange(new Control[] { pb, nimi, hind, kogus });
+                        foreach (Control item2 in new Control[] { btn, pb, nimi, hind, kogus })
+                        {
+                            item2.MouseDown += C_Click;
+                            item2.Tag = nimi.Text;
+                        }
+                        p.Controls.Add(btn);
+                        i++;
+                    }
+                    Selected = e;
+                }
+            }
+            connect.Close();
+        }
+
+        private async void C_Click(object sender, MouseEventArgs e)
+        {
+            if (!(sender is Control item)) return;
+            sE.Effect(Properties.Resources.click);
+            foreach (Control item1 in p.Controls)
+            {
+                if (!(item1 is UserControl uc) || uc.Tag != item.Tag) continue;
+                foreach (Control item2 in uc.Controls)
+                {
+                    if (!(item2 is Label kogus) || kogus.Name != "kogus") continue;
+                    if (e.Button == MouseButtons.Left)
+                    {
+                        if (Convert.ToInt32(kogus.Text.Replace("Kogus: ", "")) > 0)
+                        {
+                            Properties.Settings.Default.Tooded += item.Tag + ",";
+                            Properties.Settings.Default.Save();
+                            uc.BackColor = Color.Green;
+                            uc.ForeColor = Color.White;
+                            await Task.Delay(100);
+                            uc.BackColor = Color.White;
+                            uc.ForeColor = Color.Black;
+                            connect.Open();
+                            command = new SqlCommand("UPDATE Toodetable SET Kogus=Kogus-1 WHERE Toodenimetus=@nimi", connect);
+                            command.Parameters.AddWithValue("@nimi", item1.Tag);
+                            command.ExecuteNonQuery();
+                            connect.Close();
+                            Kassa();
+                            Tooded(Selected);
+                        }
+                        else
+                            MessageBox.Show("See toode on otsas.", "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else if (e.Button == MouseButtons.Right)
+                    {
+                        string[] t = Properties.Settings.Default.Tooded.Split(',');
+                        List<string> tooded = t.ToList();
+                        if (tooded.Contains(item2.Tag))
+                        {
+                            tooded.Remove(item2.Tag.ToString());
+                            Properties.Settings.Default.Tooded = string.Join(",", tooded);
+                            Properties.Settings.Default.Save();
+                            uc.BackColor = Color.Red;
+                            uc.ForeColor = Color.White;
+                            await Task.Delay(100);
+                            uc.BackColor = Color.White;
+                            uc.ForeColor = Color.Black;
+                            connect.Open();
+                            command = new SqlCommand("UPDATE Toodetable SET Kogus=Kogus+1 WHERE Toodenimetus=@nimi", connect);
+                            command.Parameters.AddWithValue("@nimi", item1.Tag);
+                            command.ExecuteNonQuery();
+                            connect.Close();
+                            Kassa();
+                            Tooded(Selected);
+                        }
+                        else
+                            MessageBox.Show("Te ei võtnud seda toodet.", "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-                tree.SelectedNode = null;
-                connect.Close();
             }
         }
 
-        private async void C_Click(object sender, EventArgs e)
+        private void Kassa()
         {
-            if (sender is Control item)
+            kassa.Nodes.Clear();
+            tooded = new Dictionary<string, int>();
+            List<string> temp = Properties.Settings.Default.Tooded.Split(',').ToList();
+            temp.RemoveAt(temp.Count - 1);
+            foreach (string item in temp)
             {
-                sE.Effect(Properties.Resources.click);
-                Properties.Settings.Default.Tooded += item.Tag + ",";
-                Properties.Settings.Default.Save();
-                kassa.Nodes.Add(item.Tag.ToString());
-                foreach (Control item1 in p.Controls)
-                {
-                    if (item1 is UserControl uc && uc.Tag == item.Tag)
-                    {
-                        uc.BackColor = Color.Green;
-                        uc.ForeColor = Color.White;
-                        await Task.Delay(100);
-                        uc.BackColor = Color.White;
-                        uc.ForeColor = Color.Black;
-                    }
-                }
+                if (tooded.ContainsKey(item))
+                    tooded[item] += 1;
+                else
+                    tooded[item] = 1;
             }
+            foreach (var item in tooded)
+                if (item.Key.Length>1)
+                    kassa.Nodes.Add(item.Key+" : "+item.Value);
         }
 
         private void NaitaKat()
@@ -159,6 +230,7 @@ namespace ToodedAB
             }
             connect.Close();
             Tree_AfterSelect(new object(), new TreeViewEventArgs(new TreeNode(dt_kat.Rows[0]["Kategooria_nimetus"].ToString())));
+            Selected = new TreeViewEventArgs(new TreeNode(dt_kat.Rows[0]["Kategooria_nimetus"].ToString()));
         }
 
         private void TeineNode()
