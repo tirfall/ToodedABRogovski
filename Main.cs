@@ -6,8 +6,6 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ToodedAB.Properties;
@@ -24,9 +22,12 @@ namespace ToodedAB
         Panel p;
         TreeNode kassa;
         Pood pood;
+        Cassa cassa;
         Sound s, sE;
         TreeViewEventArgs Selected;
         Dictionary<string, int> tooded = new Dictionary<string, int>();
+        int value = 0;
+        int x, i;
         public Main()
         {
             this.Width = 1200;
@@ -37,7 +38,6 @@ namespace ToodedAB
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            Properties.Settings.Default.Tooded = "";
             tree = new TreeView();
             tree.Font = new Font("Arial", 16);
             tree.Dock = DockStyle.Left;
@@ -45,11 +45,22 @@ namespace ToodedAB
             tree.Width = 150;
             tree.AfterSelect +=Tree_AfterSelect;
 
-            p = new Panel() {Size=new Size(1100,850),Location=new Point(tree.Right), BackgroundImage = Properties.Resources.bg };
+            p = new Panel() {Size=new Size(1050,850),Location=new Point(tree.Right), BackgroundImage = Properties.Resources.bg };
             p.AutoScroll = true;
             p.VerticalScroll.Visible = false;
             p.VerticalScroll.Enabled = false;
             p.Scroll += P_Scroll;
+            typeof(Panel).InvokeMember("DoubleBuffered", BindingFlags.SetProperty
+            | BindingFlags.Instance | BindingFlags.NonPublic, null,
+            p, new object[] { true });
+            /* 
+        .InvokeMember("DoubleBuffered", ...) : Это вызов метода InvokeMember для объекта Type. 
+            Этот метод позволяет вам вызывать методы, получать или устанавливать значения свойств объектов, используя рефлексию.
+        SetProperty: Указывает, что мы хотим установить значение свойства.
+        Instance: Указывает, что мы хотим получить доступ к экземпляру свойства.
+        NonPublic: Указывает, что мы хотим получить доступ к неоткрытым членам.
+        Мы передаем null, потому что свойство DoubleBuffered не является статическим, и мы хотим получить доступ к экземпляру свойства.
+            */
             tree.Nodes.Add(tn);
             Controls.AddRange(new Control[] {tree,p });
 
@@ -57,14 +68,17 @@ namespace ToodedAB
             s = new Sound();
             s.Music();
 
-            NaitaKat();
             TeineNode();
             Kassa();
+            NaitaKat();
         }
 
         private async void P_Scroll(object sender, ScrollEventArgs e)
         {
-            await Task.Run(() => { p.BackgroundImage = Properties.Resources.bg; });
+            value = p.HorizontalScroll.Value;
+            await Task.Run(() => { 
+                p.BackgroundImage = Properties.Resources.bg;
+            });
         }
 
         private void Tree_AfterSelect(object sender, TreeViewEventArgs e)
@@ -72,6 +86,12 @@ namespace ToodedAB
             if (e.Node.Text == "Kassa")
             {
                 sE.Effect(Properties.Resources.click);
+                sE.Stop();
+                s.Stop();
+                this.Hide();
+                cassa = new Cassa();
+                pood.Closed += (s, args) => this.Close();
+                pood.Show();
             }
             else if (e.Node.Text == "Kodu")
             {
@@ -94,7 +114,7 @@ namespace ToodedAB
         private void Tooded(TreeViewEventArgs e)
         {
             connect.Open();
-            adapter_kategooria = new SqlDataAdapter("SELECT Id,Kategooria_nimetus FROM Kategooria", connect);
+            adapter_kategooria = new SqlDataAdapter("SELECT Id, Kategooria_nimetus FROM Kategooria", connect);
             DataTable dt_kat = new DataTable();
             adapter_kategooria.Fill(dt_kat);
             foreach (DataRow item in dt_kat.Rows)
@@ -106,8 +126,9 @@ namespace ToodedAB
                     adapter_toode = new SqlDataAdapter($"SELECT Toodenimetus, Kogus, Hind, Pilt FROM Toodetable WHERE Kategooriad = '{id}'", connect);
                     DataTable dt_tod = new DataTable();
                     adapter_toode.Fill(dt_tod);
-                    int x = 55;
-                    int i = 0;
+                    x = 55;
+                    i = 0;
+
                     foreach (DataRow item1 in dt_tod.Rows)
                     {
                         UserControl btn = new UserControl() { Size = new Size(200, 300) };
@@ -118,6 +139,7 @@ namespace ToodedAB
                             btn.Location = new Point(x, 400);
                             x += 255;
                         }
+
                         PictureBox pb = new PictureBox() { Size = new Size(150, 150), Location = new Point(20, 20), BackColor = Color.Gray };
                         Label nimi = new Label() { Size = new Size(140, 25), Location = new Point(50, 180), Text = item1["Toodenimetus"].ToString(), Font = new Font("Arial", 15) };
                         Label hind = new Label() { Size = new Size(140, 25), Location = new Point(50, 210), Text = "Hind: " + item1["Hind"].ToString() + "$", Font = new Font("Arial", 15) };
@@ -125,11 +147,13 @@ namespace ToodedAB
                         kogus.Name = "kogus";
                         btn.Name = nimi.Text;
                         btn.Controls.AddRange(new Control[] { pb, nimi, hind, kogus });
+
                         foreach (Control item2 in new Control[] { btn, pb, nimi, hind, kogus })
                         {
                             item2.MouseDown += C_Click;
                             item2.Tag = nimi.Text;
                         }
+
                         p.Controls.Add(btn);
                         i++;
                     }
@@ -155,11 +179,14 @@ namespace ToodedAB
                         {
                             Properties.Settings.Default.Tooded += item.Tag + ",";
                             Properties.Settings.Default.Save();
-                            uc.BackColor = Color.Green;
-                            uc.ForeColor = Color.White;
-                            await Task.Delay(100);
-                            uc.BackColor = Color.White;
-                            uc.ForeColor = Color.Black;
+                            await Task.Run(async() =>
+                            {
+                                uc.BackColor = Color.Green;
+                                uc.ForeColor = Color.White;
+                                await Task.Delay(100);
+                                uc.BackColor = Color.White;
+                                uc.ForeColor = Color.Black;
+                            });
                             connect.Open();
                             command = new SqlCommand("UPDATE Toodetable SET Kogus=Kogus-1 WHERE Toodenimetus=@nimi", connect);
                             command.Parameters.AddWithValue("@nimi", item1.Tag);
@@ -167,6 +194,7 @@ namespace ToodedAB
                             connect.Close();
                             Kassa();
                             Tooded(Selected);
+                            p.HorizontalScroll.Value = value;
                         }
                         else
                             MessageBox.Show("See toode on otsas.", "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -180,11 +208,14 @@ namespace ToodedAB
                             tooded.Remove(item2.Tag.ToString());
                             Properties.Settings.Default.Tooded = string.Join(",", tooded);
                             Properties.Settings.Default.Save();
-                            uc.BackColor = Color.Red;
-                            uc.ForeColor = Color.White;
-                            await Task.Delay(100);
-                            uc.BackColor = Color.White;
-                            uc.ForeColor = Color.Black;
+                            await Task.Run(async () =>
+                            {
+                                uc.BackColor = Color.Red;
+                                uc.ForeColor = Color.White;
+                                await Task.Delay(100);
+                                uc.BackColor = Color.White;
+                                uc.ForeColor = Color.Black;
+                            });
                             connect.Open();
                             command = new SqlCommand("UPDATE Toodetable SET Kogus=Kogus+1 WHERE Toodenimetus=@nimi", connect);
                             command.Parameters.AddWithValue("@nimi", item1.Tag);
