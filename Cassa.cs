@@ -4,10 +4,17 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using iText.Kernel.Colors;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Draw;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 
 namespace ToodedAB
 {
@@ -24,8 +31,9 @@ namespace ToodedAB
         Label tb,tb1, tb2;
         Button btn1, btn2, btn3;
         int kogus;
-        bool red = false;
+        int red = 0;
         Main main;
+        string selected;
 
         public Cassa()
         {
@@ -43,7 +51,7 @@ namespace ToodedAB
             lb.SelectedValueChanged += Lb_SelectedValueChanged;
             lb.MouseClick += Lb_MouseClick;
             uc = new UserControl() { Size = new Size(700,370), Location = new Point(lb.Right+50,15), Font = new Font("Arial", 20) };
-            btn1 = new Button() { Text= "Muuta tooteid", Size = new Size(uc.Width/3,300), Location = new Point(uc.Left,480), Font = new Font("Arial", 20) };
+            btn1 = new Button() { Text= "Vaatamine", Size = new Size(uc.Width/3,300), Location = new Point(uc.Left,480), Font = new Font("Arial", 20) };
             btn1.Click += Btn1_Click;
             btn2 = new Button() { Text = "Osta", Size = new Size(uc.Width / 3, 300), Location = new Point(btn1.Right, 480), Font = new Font("Arial", 20) };
             btn2.Click += Btn2_Click;
@@ -69,12 +77,62 @@ namespace ToodedAB
 
         private void Btn2_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arved");
+            int i = 1;
+            string fileName = "Arv0.pdf";
+            while (Properties.Settings.Default.Arved.Split(',').Contains(fileName))
+            {
+                fileName = $"Arv{i}.pdf";
+                i++;
+            }
+            string filePath = Path.Combine(folderPath, fileName);
+            Properties.Settings.Default.Arved += fileName + ",";
+            filePath = filePath.Replace("bin\\Debug\\", "");
+            PdfWriter writer = new PdfWriter(filePath);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+            Paragraph header = new Paragraph("Vihane Sipelgas").SetTextAlignment(TextAlignment.CENTER).SetFontSize(20);
+            Paragraph subheader = new Paragraph("Arv").SetTextAlignment(TextAlignment.CENTER).SetFontSize(15);
+            LineSeparator ls = new LineSeparator(new SolidLine());
+            Table table = new Table(3, false);
+            Cell c11 = new Cell(1, 1)
+               .Add(new Paragraph("Toode"));
+            Cell c12 = new Cell(1, 1)
+               .Add(new Paragraph("Kogus"));
+            Cell c13 = new Cell(1, 1)
+               .Add(new Paragraph("Hind"));
+            //foreach (var item in collection)
+            //{
+
+            //}
+            foreach (Cell item in new Cell[] {c11,c12,c13})
+            {
+                item.SetBackgroundColor(ColorConstants.GRAY).SetTextAlignment(TextAlignment.CENTER);
+                table.AddCell(item);
+            }
+            AddRangeElements(document, header, subheader);
+            document.Add(ls);
+            document.Add(table);
+            document.Close();
+
         }
+
+        private void AddRangeElements(Document document, params Paragraph[] elements)
+        {
+            foreach (Paragraph element in elements) 
+            {
+                document.Add(element);
+            }
+        }    
 
         private void Btn1_Click(object sender, EventArgs e)
         {
-            red = red ? false : true;
+            switch (red)
+            {
+                case 0: red = 1; btn1.Text = "Lisamine";break;
+                case 1: red = 2; btn1.Text = "Eemaldamine"; break;
+                case 2: red = 0; btn1.Text = "Vaatamine"; break;
+            }
         }
 
         private void Andmed(string nimi)
@@ -91,42 +149,40 @@ namespace ToodedAB
 
         private void Lb_MouseClick(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
-            string selected = lb.SelectedItem.ToString().Replace(" ", "").Split(':')[0];
-            if (red)
+            if (red == 0)
+                return;
+            selected = lb.SelectedItem.ToString().Replace(" ", "").Split(':')[0];
+            connect.Open();
+            if (red == 1)
             {
-                connect.Open();
-                if (e.Button == MouseButtons.Left)
+                if (kogus > 0)
                 {
-                    if (kogus > 0)
-                    {
-                        Properties.Settings.Default.Tooded += selected + ",";
-                        command = new SqlCommand("UPDATE Toodetable SET Kogus=Kogus-1 WHERE Toodenimetus=@nimi", connect);
-                        command.Parameters.AddWithValue("@nimi", selected);
-                        command.ExecuteNonQuery();
-                    }
-                    else
-                        MessageBox.Show("See toode on otsas.", "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Properties.Settings.Default.Tooded += selected + ",";
+                    command = new SqlCommand("UPDATE Toodetable SET Kogus=Kogus-1 WHERE Toodenimetus=@nimi", connect);
+                    command.Parameters.AddWithValue("@nimi", selected);
+                    command.ExecuteNonQuery();
                 }
                 else
-                {
-                    string[] t = Properties.Settings.Default.Tooded.Split(',');
-                    List<string> tooded = t.ToList();
-                    if (tooded.Contains(selected))
-                    {
-                        tooded.Remove(selected);
-                        Properties.Settings.Default.Tooded = string.Join(",", tooded);
-                        command = new SqlCommand("UPDATE Toodetable SET Kogus=Kogus+1 WHERE Toodenimetus=@nimi", connect);
-                        command.Parameters.AddWithValue("@nimi", selected);
-                        command.ExecuteNonQuery();
-                    }
-                    else
-                        MessageBox.Show("Te ei võtnud seda toodet.", "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                Properties.Settings.Default.Save();
-                connect.Close();
-                ListBoxFill();
+                    MessageBox.Show("See toode on otsas.", "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            else
+            {
+                string[] t = Properties.Settings.Default.Tooded.Split(',');
+                List<string> tooded = t.ToList();
+                if (tooded.Contains(selected))
+                {
+                    tooded.Remove(selected);
+                    Properties.Settings.Default.Tooded = string.Join(",", tooded);
+                    command = new SqlCommand("UPDATE Toodetable SET Kogus=Kogus+1 WHERE Toodenimetus=@nimi", connect);
+                    command.Parameters.AddWithValue("@nimi", selected);
+                    command.ExecuteNonQuery();
+                }
+                else
+                    MessageBox.Show("Te ei võtnud seda toodet.", "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            Properties.Settings.Default.Save();
+            connect.Close();
+            ListBoxFill();
             Andmed(selected);
         }
 
@@ -157,7 +213,10 @@ namespace ToodedAB
             }
             else
             {
-                string selected = lb.SelectedItem.ToString().Replace(" ", "").Split(':')[0];
+                if (red==0)
+                {
+                    selected = lb.SelectedItem.ToString().Replace(" ", "").Split(':')[0];
+                }
                 adapter_toode = new SqlDataAdapter($"SELECT Toodenimetus, Kogus, Hind FROM Toodetable WHERE Toodenimetus = '{selected}'", connect);
                 DataTable dt_tod = new DataTable();
                 adapter_toode.Fill(dt_tod);
@@ -169,6 +228,7 @@ namespace ToodedAB
                 tb = new Label() { Location = new Point(30, 30), Font = new Font("Arial", 20), Text = $"(1) {selected} | {hind} eurot", AutoSize = true };
                 tb1 = new Label() { Location = new Point(30, 90), Font = new Font("Arial", 20), Text = $"({tooded[selected]}) {selected}: {summa} eurot", AutoSize = true };
                 tb2 = new Label() { Location = new Point(30, 150), Font = new Font("Arial", 20), Text = $"({tooded[selected]}) {selected} allahindlusega : {summa - summa * (Convert.ToDouble(acc.Discount) / 100)} eurot", AutoSize = true };
+
             }
             uc.Controls.AddRange(new Control[] {tb, tb1, tb2 });
         }
