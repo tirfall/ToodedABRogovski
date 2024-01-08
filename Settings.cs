@@ -144,26 +144,23 @@ namespace ToodedAB
         private void reset_Click(object sender, EventArgs e)
         {
             GetAccounts(); //получаю все аккаунты из бд
-            bool i = false;
             //проверяю что все условия подходят для изменения пароля
             if (!acc.ContainsKey(username.Text))
             {
                 username.BackColor = Color.Red;
                 hint.BackColor = Color.Red;
-                i = true;
+                return;
             }
             else if (acc[username.Text][1]!=hint.Text.ToString())
             {
                 hint.BackColor = Color.Red;
-                i = true;
+                return;
             }
             if (password1.Text.Length<=3)
             {
                 hint.BackColor = Color.Red;
-                i = true;
-            }
-            if (i)
                 return;
+            }
             //изменяю пароль в бд
             command = new SqlCommand("UPDATE Account SET Password=@pass WHERE Username=@nimi", connect);
             connect.Open();
@@ -298,30 +295,27 @@ namespace ToodedAB
             password1.BackColor = Color.White;
             hint.BackColor = Color.White;
             GetAccounts(); //Получаю все аккаунты
-            bool i = false;
             //Проверка что все данные подходят для создания аккаунта
             if (username.Text.Length <= 3 || acc.ContainsKey(username.Text))
             {
                 username.BackColor = Color.Red;
-                i = true;
+                return;
             }
             if (password.Text.Length <= 3)
             {
                 password.BackColor = Color.Red;
-                i = true;
+                return;
             }
             if (password1.Text != password.Text || password1.Text.Length <= 3)
             {
                 password1.BackColor = Color.Red;
-                i = true;
+                return;
             }
             if (hint.Text.Length <= 3)
             {
                 hint.BackColor = Color.Red;
-                i = true;
-            }
-            if (i)
                 return;
+            }
             //Добавляю аккаунт в базу данных
             command = new SqlCommand("INSERT INTO Account (Username,Password,Hint,Time,Money,Cashback) VALUES (@user,@pass,@hint,@time,@mon,@cash)", connect);
             connect.Open();
@@ -395,7 +389,7 @@ namespace ToodedAB
                     });
                 }
             });
-            password.UseSystemPasswordChar = true;
+            password1.UseSystemPasswordChar = true;
             password1.ForeColor = Color.Black;
             await Task.Delay(500);
         }

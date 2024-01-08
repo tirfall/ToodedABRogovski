@@ -364,30 +364,14 @@ namespace ToodedAB
                     cb1.BackColor= Color.Red;
                 }
             }
-            try
-            {
-                int num1 = Convert.ToInt32(cb2.Text);
-                if (num1<0)
-                {
-                    b.Add(false);
-                    cb2.BackColor= Color.Red;
-                }
-            }
-            catch (Exception)
+            int.TryParse(cb2.Text, out int num1);
+            if (num1 == 0)
             {
                 b.Add(false);
-                cb2.BackColor= Color.Red;
+                cb2.BackColor = Color.Red;
             }
-            try
-            {
-                double num1 = Convert.ToDouble(cb3.Text);
-                if (num1 < 0)
-                {
-                    b.Add(false);
-                    cb3.BackColor = Color.Red;
-                }
-            }
-            catch (Exception)
+            double.TryParse(cb3.Text, out double num2);
+            if (num2 == 0)
             {
                 b.Add(false);
                 cb3.BackColor = Color.Red;

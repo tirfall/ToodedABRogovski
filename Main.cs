@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ToodedAB.Properties;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace ToodedAB
 {
@@ -90,8 +91,8 @@ namespace ToodedAB
                 s.Stop();
                 this.Hide();
                 cassa = new Cassa();
-                pood.Closed += (s, args) => this.Close();
-                pood.Show();
+                cassa.Closed += (s, args) => this.Close();
+                cassa.Show();
             }
             else if (e.Node.Text == "Kodu")
             {
@@ -117,15 +118,18 @@ namespace ToodedAB
             adapter_kategooria = new SqlDataAdapter("SELECT Id, Kategooria_nimetus FROM Kategooria", connect);
             DataTable dt_kat = new DataTable();
             adapter_kategooria.Fill(dt_kat);
+            connect.Close();
             foreach (DataRow item in dt_kat.Rows)
             {
                 if (e.Node.Text == item["Kategooria_nimetus"].ToString())
                 {
                     p.Controls.Clear();
                     int id = Convert.ToInt32(item["Id"]);
+                    connect.Open();
                     adapter_toode = new SqlDataAdapter($"SELECT Toodenimetus, Kogus, Hind, Pilt FROM Toodetable WHERE Kategooriad = '{id}'", connect);
                     DataTable dt_tod = new DataTable();
                     adapter_toode.Fill(dt_tod);
+                    connect.Close();
                     x = 55;
                     i = 0;
 
@@ -153,14 +157,12 @@ namespace ToodedAB
                             item2.MouseDown += C_Click;
                             item2.Tag = nimi.Text;
                         }
-
                         p.Controls.Add(btn);
                         i++;
                     }
                     Selected = e;
                 }
             }
-            connect.Close();
         }
 
         private async void C_Click(object sender, MouseEventArgs e)
@@ -192,9 +194,6 @@ namespace ToodedAB
                             command.Parameters.AddWithValue("@nimi", item1.Tag);
                             command.ExecuteNonQuery();
                             connect.Close();
-                            Kassa();
-                            Tooded(Selected);
-                            p.HorizontalScroll.Value = value;
                         }
                         else
                             MessageBox.Show("See toode on otsas.", "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -221,12 +220,13 @@ namespace ToodedAB
                             command.Parameters.AddWithValue("@nimi", item1.Tag);
                             command.ExecuteNonQuery();
                             connect.Close();
-                            Kassa();
-                            Tooded(Selected);
                         }
                         else
                             MessageBox.Show("Te ei võtnud seda toodet.", "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                    Kassa();
+                    Tooded(Selected);
+                    p.HorizontalScroll.Value = value;
                 }
             }
         }

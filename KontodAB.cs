@@ -277,37 +277,19 @@ namespace ToodedAB
                 b.Add(false);
                 cb3.BackColor= Color.Red;
             }
-            DateTime dt;
-            try
-            {
-                dt = Convert.ToDateTime(cb4.Text);
-                if ((int)Math.Round((Convert.ToDateTime(DateTime.Now) - dt).TotalDays, 0)<0)
-                {
-                    b.Add(false);
-                    cb4.BackColor= Color.Red;
-                }
-            }
-            catch (Exception)
+            DateTime.TryParse(cb4.Text, out DateTime dt);
+            if (dt == DateTime.MinValue)
             {
                 b.Add(false);
-                cb4.BackColor= Color.Red;
+                cb4.BackColor = Color.Red;
             }
-            int num1;
             foreach (TextBox item in new TextBox[] {cb5,cb6})
             {
-                try
-                {
-                    num1 = Convert.ToInt32(item.Text);
-                    if (num1<0)
-                    {
-                        b.Add(false);
-                        item.BackColor= Color.Red;
-                    }
-                }
-                catch (Exception)
+                int.TryParse(item.Text, out int num1);
+                if (num1 == 0)
                 {
                     b.Add(false);
-                    item.BackColor= Color.Red;
+                    item.BackColor = Color.Red;
                 }
             }
             return !b.Any(f => f == false);
