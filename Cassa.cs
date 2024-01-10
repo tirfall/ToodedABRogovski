@@ -6,15 +6,21 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using iText.Barcodes;
+using iText.Commons.Datastructures;
+using iText.IO.Image;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Draw;
+using iText.Kernel.Pdf.Xobject;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using QRCoder;
 
 namespace ToodedAB
 {
@@ -87,6 +93,7 @@ namespace ToodedAB
             }
             string filePath = Path.Combine(folderPath, fileName);
             Properties.Settings.Default.Arved += fileName + ",";
+            Properties.Settings.Default.Save();
             filePath = filePath.Replace("bin\\Debug\\", "");
             PdfWriter writer = new PdfWriter(filePath);
             PdfDocument pdf = new PdfDocument(writer);
@@ -94,36 +101,45 @@ namespace ToodedAB
             Paragraph header = new Paragraph("Vihane Sipelgas").SetTextAlignment(TextAlignment.CENTER).SetFontSize(20);
             Paragraph subheader = new Paragraph("Arv").SetTextAlignment(TextAlignment.CENTER).SetFontSize(15);
             LineSeparator ls = new LineSeparator(new SolidLine());
-            Table table = new Table(3, false);
+            Paragraph time = new Paragraph(DateTime.Now.ToString());
+            Table table = new Table(4, true);
             Cell c11 = new Cell(1, 1)
                .Add(new Paragraph("Toode"));
-            Cell c12 = new Cell(1, 1)
+            Cell c12 = new Cell(1, 2)
                .Add(new Paragraph("Kogus"));
-            Cell c13 = new Cell(1, 1)
+            Cell c13 = new Cell(1, 3)
                .Add(new Paragraph("Hind"));
-            //foreach (var item in collection)
-            //{
-
-            //}
             foreach (Cell item in new Cell[] {c11,c12,c13})
             {
                 item.SetBackgroundColor(ColorConstants.GRAY).SetTextAlignment(TextAlignment.CENTER);
                 table.AddCell(item);
             }
-            AddRangeElements(document, header, subheader);
+            int x = 2;
+            foreach (var item in tooded)
+            {
+                Andmed(item.Key);
+                table.AddCell(new Cell(x, 1).Add(new Paragraph(item.Key)));
+                table.AddCell(new Cell(x, 2).Add(new Paragraph(item.Value.ToString())));
+                table.AddCell(new Cell(x, 3).Add(new Paragraph((hind2*(double)item.Value).ToString())));
+                x++;
+            }
+            Url generator = new Url(filePath);
+            string payload = generator.ToString();
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            var qrCodeAsBitmap = qrCode.GetGraphic(20); 
+            PdfFormXObject template = new PdfFormXObject(new iText.Kernel.Geom.Rectangle(0, 500, qrCodeAsBitmap.Width, qrCodeAsBitmap.Height));
+            Canvas canvas = new Canvas();
+            document.Add(header);
+            document.Add(subheader);
             document.Add(ls);
+            document.Add(time);
             document.Add(table);
+            document.Add(template);
             document.Close();
 
         }
-
-        private void AddRangeElements(Document document, params Paragraph[] elements)
-        {
-            foreach (Paragraph element in elements) 
-            {
-                document.Add(element);
-            }
-        }    
 
         private void Btn1_Click(object sender, EventArgs e)
         {
