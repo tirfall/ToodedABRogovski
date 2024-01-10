@@ -10,7 +10,6 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using iText.Barcodes;
 using iText.Commons.Datastructures;
 using iText.IO.Image;
 using iText.Kernel.Colors;
@@ -32,7 +31,7 @@ namespace ToodedAB
         SqlConnection connect = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\AppData\Tooded_DB.mdf;Integrated Security=True");
         SqlCommand command;
         SqlDataAdapter adapter_toode;
-        double summa, hind, hind2;
+        double summa, hind, hind2, summadis;
         Account acc;
         Label tb,tb1, tb2;
         Button btn1, btn2, btn3;
@@ -100,7 +99,7 @@ namespace ToodedAB
             Document document = new Document(pdf);
             Paragraph header = new Paragraph("Vihane Sipelgas").SetTextAlignment(TextAlignment.CENTER).SetFontSize(20);
             Paragraph subheader = new Paragraph("Arv").SetTextAlignment(TextAlignment.CENTER).SetFontSize(15);
-            LineSeparator ls = new LineSeparator(new SolidLine());
+            LineSeparator ls = new LineSeparator(new DottedLine());
             Paragraph time = new Paragraph(DateTime.Now.ToString());
             Table table = new Table(4, true);
             Cell c11 = new Cell(1, 1)
@@ -123,20 +122,24 @@ namespace ToodedAB
                 table.AddCell(new Cell(x, 3).Add(new Paragraph((hind2*(double)item.Value).ToString())));
                 x++;
             }
-            Url generator = new Url(filePath);
-            string payload = generator.ToString();
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(qrCodeData);
-            var qrCodeAsBitmap = qrCode.GetGraphic(20); 
-            PdfFormXObject template = new PdfFormXObject(new iText.Kernel.Geom.Rectangle(0, 500, qrCodeAsBitmap.Width, qrCodeAsBitmap.Height));
-            Canvas canvas = new Canvas();
+            Paragraph kokku = new Paragraph("Kokku: "+summa.ToString()).SetTextAlignment(TextAlignment.LEFT).SetFontSize(15);
+            Paragraph kokku1 = new Paragraph("Kokku allahindlusega: "+summadis.ToString()).SetTextAlignment(TextAlignment.LEFT).SetFontSize(15);
+            Paragraph cb = new Paragraph("Boonusraha: "+(acc.Cashback*0,01).ToString()).SetTextAlignment(TextAlignment.LEFT).SetFontSize(15);
+            Paragraph nimi = new Paragraph("Nimi: "+acc.Nimi).SetTextAlignment(TextAlignment.LEFT).SetFontSize(15);
+            Paragraph disc = new Paragraph("Allahindlus: "+acc.Discount.ToString()).SetTextAlignment(TextAlignment.LEFT).SetFontSize(15);
+
             document.Add(header);
             document.Add(subheader);
             document.Add(ls);
             document.Add(time);
             document.Add(table);
-            document.Add(template);
+            document.Add(ls);
+            document.Add(kokku);
+            document.Add(kokku1);
+            document.Add(ls);
+            document.Add(cb);
+            document.Add(nimi);
+            document.Add(disc);
             document.Close();
 
         }
@@ -220,7 +223,8 @@ namespace ToodedAB
                 }
                 tb = null;
                 tb1 = new Label() { Location = new Point(30,30), Font = new Font("Arial",20), Text = $"Kokku: {summa} eurot", AutoSize = true };
-                tb2 = new Label() { Location = new Point(30, 90), Font = new Font("Arial", 20), Text = $"Kokku allahindlusega : {summa - summa * (Convert.ToDouble(acc.Discount) / 100)} eurot", AutoSize = true };
+                summadis = summa - summa * (Convert.ToDouble(acc.Discount) / 100);
+                tb2 = new Label() { Location = new Point(30, 90), Font = new Font("Arial", 20), Text = $"Kokku allahindlusega : {summadis} eurot", AutoSize = true };
             }
             else if (lb.SelectedIndex == lb.Items.Count - 2)
             {
