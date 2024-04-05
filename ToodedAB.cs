@@ -22,9 +22,9 @@ namespace ToodedAB
         SqlCommand command;
         AdminPanel adminPanel;
         ComboBox cb1, cb4, cb5;
-        TextBox cb2,cb3;
+        TextBox cb2, cb3;
         Label lb1, lb2, lb3, lb4, lb5;
-        Button btn1, btn2, btn3, btn4, btn5, btn6,btn7;
+        Button btn1, btn2, btn3, btn4, btn5, btn6, btn7;
         Dictionary<string, int> kategooria;
         Dictionary<int, string> kategooriaRev;
         int SelectId;
@@ -39,19 +39,19 @@ namespace ToodedAB
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Text = "ToodedAB";
-            lb1 = new Label() { Text = "Toode nimetus", Location = new Point(20, 20), Font = new Font("Arial", 16), ForeColor = Color.Black, Size=new Size(150, 30) };
-            lb2 = new Label() { Text = "Kogus", Location = new Point(20, lb1.Location.Y+40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size=new Size(150, 30) };
-            lb3 = new Label() { Text = "Hind", Location = new Point(20, lb2.Location.Y+ 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size=new Size(150, 30) };
-            lb4 = new Label() { Text = "Kategooria", Location = new Point(20, lb3.Location.Y+ 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size=new Size(150, 30) };
+            lb1 = new Label() { Text = "Toode nimetus", Location = new Point(20, 20), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
+            lb2 = new Label() { Text = "Kogus", Location = new Point(20, lb1.Location.Y + 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
+            lb3 = new Label() { Text = "Hind", Location = new Point(20, lb2.Location.Y + 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
+            lb4 = new Label() { Text = "Kategooria", Location = new Point(20, lb3.Location.Y + 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
             lb5 = new Label() { Text = "Pilt", Location = new Point(20, lb4.Location.Y + 40), Font = new Font("Arial", 16), ForeColor = Color.Black, Size = new Size(150, 30) };
-            cb1 = new ComboBox() { Location = new Point(lb1.Right+20, lb1.Location.Y), Font = new Font("Arial", 15) };
-            cb2 = new TextBox() { Location = new Point(lb2.Right+20, lb2.Location.Y), Font = new Font("Arial", 15), Size = cb1.Size };
-            cb3 = new TextBox() { Location = new Point(lb3.Right+20, lb3.Location.Y), Font = new Font("Arial", 15), Size = cb1.Size };
+            cb1 = new ComboBox() { Location = new Point(lb1.Right + 20, lb1.Location.Y), Font = new Font("Arial", 15) };
+            cb2 = new TextBox() { Location = new Point(lb2.Right + 20, lb2.Location.Y), Font = new Font("Arial", 15), Size = cb1.Size };
+            cb3 = new TextBox() { Location = new Point(lb3.Right + 20, lb3.Location.Y), Font = new Font("Arial", 15), Size = cb1.Size };
             cb4 = new ComboBox() { Location = new Point(lb5.Right + 20, lb5.Location.Y), Font = new Font("Arial", 15) };
-            cb5 = new ComboBox() { Location = new Point(lb4.Right+20, lb4.Location.Y), Font = new Font("Arial", 15) };
-            btn1 = new Button() { Text = "Lisa kategooria", Location = new Point(lb5.Left, lb5.Bottom+15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
-            btn1.Click +=Btn1_Click;
-            btn2 = new Button() { Text = "Kustuta kategooria", Location = new Point(btn1.Right+5, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
+            cb5 = new ComboBox() { Location = new Point(lb4.Right + 20, lb4.Location.Y), Font = new Font("Arial", 15) };
+            btn1 = new Button() { Text = "Lisa kategooria", Location = new Point(lb5.Left, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
+            btn1.Click += Btn1_Click;
+            btn2 = new Button() { Text = "Kustuta kategooria", Location = new Point(btn1.Right + 5, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
             btn2.Click += Btn2_Click;
             btn3 = new Button() { Text = "Otsi fail", Location = new Point(btn2.Right + 15, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
             btn3.Click += Btn3_Click;
@@ -61,13 +61,13 @@ namespace ToodedAB
             btn5.Click += Btn5_Click;
             btn6 = new Button() { Text = "Kustuta", Location = new Point(btn5.Right + 15, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
             btn6.Click += Btn6_Click;
-            btn7= new Button() { Text = "Admin panel", Location = new Point(btn6.Right+15, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
-            btn7.Click+=Btn7_Click;
-            pb = new PictureBox() { Location = new Point(btn5.Right-btn5.Width/2, cb1.Top-10), Size = new Size(200, 200), BackColor=Color.Gray };
-            ofd = new OpenFileDialog() { FileName = "Valige pildifail", Multiselect=true, InitialDirectory=Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Title = "Avage pildifail", Filter = "Image Files|*.jpeg; *.jpg; *.gif; *.bmp; *.png; *.tiff; *.icon; *.emf; *.wmf" };
-            save = new SaveFileDialog() { InitialDirectory=Path.GetFullPath(@"..\..\Images") };
-            dgv.CellClick +=Dgv_CellClick;
-            cb1.SelectedValueChanged+=Cb_SelectedValueChanged;
+            btn7 = new Button() { Text = "Admin panel", Location = new Point(btn6.Right + 15, lb5.Bottom + 15), Size = new Size(120, 20), FlatStyle = FlatStyle.Popup };
+            btn7.Click += Btn7_Click;
+            pb = new PictureBox() { Location = new Point(btn5.Right - btn5.Width / 2, cb1.Top - 10), Size = new Size(200, 200), BackColor = Color.Gray };
+            ofd = new OpenFileDialog() { FileName = "Valige pildifail", Multiselect = true, InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Title = "Avage pildifail", Filter = "Image Files|*.jpeg; *.jpg; *.gif; *.bmp; *.png; *.tiff; *.icon; *.emf; *.wmf" };
+            save = new SaveFileDialog() { InitialDirectory = Path.GetFullPath(@"..\..\Piltid") };
+            dgv.CellClick += Dgv_CellClick;
+            cb1.SelectedValueChanged += Cb_SelectedValueChanged;
             this.Controls.AddRange(new Control[] { lb1, lb2, lb3, lb4, lb5, cb1, cb2, cb3, cb4, cb5, btn1, btn2, btn3, btn4, btn5, btn6, btn7, pb });
             Naita();
         }
@@ -108,12 +108,11 @@ namespace ToodedAB
             Naita();
         }
 
-        //при нажатии на клетку в таблице
         private void Dgv_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
-                if (dgv.Rows[e.RowIndex].Cells[0].Value.ToString()== "")
+                if (dgv.Rows[e.RowIndex].Cells[0].Value.ToString() == "")
                 {
                     cb1.Text = "";
                     cb2.Text = "0";
@@ -131,7 +130,8 @@ namespace ToodedAB
                     }
                     NaitaPilt();
                 }
-            } catch (Exception) { return; }
+            }
+            catch (Exception) { return; }
         }
 
         private void Btn5_Click(object sender, EventArgs e)
@@ -179,13 +179,13 @@ namespace ToodedAB
                 {
                     pb.Image = new Bitmap(ofd.FileName);
                     pb.SizeMode = PictureBoxSizeMode.Zoom;
-                    save.FileName=cb1.Text+Path.GetExtension(ofd.FileName);
-                    save.Filter="Images|"+Path.GetExtension(ofd.FileName);
-                    if (save.ShowDialog()==DialogResult.OK)
+                    save.FileName = cb1.Text + Path.GetExtension(ofd.FileName);
+                    save.Filter = "Piltid|" + Path.GetExtension(ofd.FileName);
+                    if (save.ShowDialog() == DialogResult.OK)
                     {
                         File.Copy(ofd.FileName, save.FileName);
                         string[] strings = save.FileName.Split('\\');
-                        string name = strings[strings.Count()-1];
+                        string name = strings[strings.Count() - 1];
                         int num = SelectId;
                         command = new SqlCommand("UPDATE Toodetable SET Pilt=@img WHERE Id=@id", connect);
                         connect.Open();
@@ -220,7 +220,6 @@ namespace ToodedAB
             }
         }
 
-        //Обновить текстовый ящик для категории
         private void NaitaKategooriad()
         {
             kategooria = new Dictionary<string, int>();
@@ -250,7 +249,6 @@ namespace ToodedAB
             connect.Close();
         }
 
-        //Обновить все текстовые ящики таблицы Toodetable
         private void NaitaRows()
         {
             connect.Open();
@@ -270,7 +268,6 @@ namespace ToodedAB
             connect.Close();
         }
 
-        //Показать данные в таблицы
         private void NaitaAndmed()
         {
             connect.Open();
@@ -280,9 +277,9 @@ namespace ToodedAB
             dgv.DataSource = null;
             dgv.DataSource = dt_toode;
             DataGridViewComboBoxColumn dgvcb = new DataGridViewComboBoxColumn();
-            dgvcb.HeaderText= "Kategooria";
+            dgvcb.HeaderText = "Kategooria";
             dgvcb.Name = "KategooriaColumn";
-            dgvcb.DataPropertyName= "Kategooria_nimetus";
+            dgvcb.DataPropertyName = "Kategooria_nimetus";
             HashSet<string> list = new HashSet<string>();
             foreach (DataRow item in dt_toode.Rows)
             {
@@ -298,7 +295,6 @@ namespace ToodedAB
             connect.Close();
         }
 
-        //Показать всё (активирует все методы Naita)
         private void Naita()
         {
             foreach (ComboBox item in new ComboBox[] { cb1, cb4, cb5 })
@@ -314,7 +310,7 @@ namespace ToodedAB
             NaitaPilt();
         }
 
-        //Показать картинку
+        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         private void NaitaPilt()
         {
             try
@@ -322,17 +318,17 @@ namespace ToodedAB
                 DirectoryInfo Di = new DirectoryInfo(save.InitialDirectory);
                 foreach (FileInfo fi in Di.GetFiles())
                 {
-                    s=fi.Name+"\r\n";
+                    s = fi.Name + "\r\n";
                     if (s.ToLower().Contains(cb1.Text.ToLower()) || s.ToLower().Contains(cb4.Text.ToLower()))
                         break;
                 }
                 if (!s.ToLower().Contains(cb1.Text.ToLower()) && !s.ToLower().Contains(cb4.Text.ToLower()))
                 {
                     pb.Image = null;
-                    s="";
+                    s = "";
                     return;
                 }
-                pb.ImageLocation = save.InitialDirectory+"\\"+s;
+                pb.ImageLocation = save.InitialDirectory + "\\" + s;
                 pb.Load();
                 pb.SizeMode = PictureBoxSizeMode.Zoom;
             }
@@ -341,27 +337,27 @@ namespace ToodedAB
 
         private bool ControlInsertKat()
         {
-            cb5.BackColor= Color.White;
+            cb5.BackColor = Color.White;
             List<bool> b = new List<bool>();
-            if (cb5.Items.Contains(cb5.Text) || cb5.Text=="" || cb5.Text.Length<3)
+            if (cb5.Items.Contains(cb5.Text) || cb5.Text == "" || cb5.Text.Length < 3)
             {
                 b.Add(false);
-                cb5.BackColor= Color.Red;
+                cb5.BackColor = Color.Red;
             }
             return !b.Any(c => c == false);
         }
 
         private bool ControlInsert(bool c)
         {
-            foreach (Control item in new Control[] {cb1,cb2,cb3,cb4,cb5 })
+            foreach (Control item in new Control[] { cb1, cb2, cb3, cb4, cb5 })
                 item.BackColor = Color.White;
             List<bool> b = new List<bool>();
             if (c)
             {
-                if (cb1.Items.Contains(cb1.Text) || cb1.Text.Length<4)
+                if (cb1.Items.Contains(cb1.Text) || cb1.Text.Length < 4)
                 {
                     b.Add(false);
-                    cb1.BackColor= Color.Red;
+                    cb1.BackColor = Color.Red;
                 }
             }
             int.TryParse(cb2.Text, out int num1);
@@ -376,10 +372,10 @@ namespace ToodedAB
                 b.Add(false);
                 cb3.BackColor = Color.Red;
             }
-            if (!cb5.Items.Contains(cb5.Text) || cb5.Text=="")
+            if (!cb5.Items.Contains(cb5.Text) || cb5.Text == "")
             {
                 b.Add(false);
-                cb5.BackColor= Color.Red;
+                cb5.BackColor = Color.Red;
             }
             return !b.Any(f => f == false);
         }

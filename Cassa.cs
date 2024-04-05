@@ -83,11 +83,11 @@ namespace ToodedAB
             string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arved");
             int i = 1;
             string fileName = "Arv0.pdf";
-            //while (Properties.Settings.Default.Arved.Split(',').Contains(fileName))
-            //{
-            //    fileName = $"Arv{i}.pdf";
-            //    i++;
-            //}
+            while (Properties.Settings.Default.Arved.Split(',').Contains(fileName))
+            {
+                fileName = $"Arv{i}.pdf";
+                i++;
+            }
             string filePath = Path.Combine(folderPath, fileName);
             Properties.Settings.Default.Arved += fileName + ",";
             Properties.Settings.Default.Save();
