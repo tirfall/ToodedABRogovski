@@ -24,7 +24,6 @@ namespace ToodedAB
         TreeNode kassa;
         Pood pood;
         Cassa cassa;
-        Sound s, sE;
         TreeViewEventArgs Selected;
         Dictionary<string, int> tooded = new Dictionary<string, int>();
         int value = 0;
@@ -34,7 +33,6 @@ namespace ToodedAB
             this.Width = 1200;
             this.Height = 900;
             this.Text = "VS Pood | Vihane Sipelgas";
-            this.BackgroundImage = Properties.Resources.bg;
             this.Icon = Properties.Resources.Icon;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -46,7 +44,7 @@ namespace ToodedAB
             tree.Width = 150;
             tree.AfterSelect +=Tree_AfterSelect;
 
-            p = new Panel() {Size=new Size(1050,850),Location=new Point(tree.Right), BackgroundImage = Properties.Resources.bg };
+            p = new Panel() {Size=new Size(1050,850),Location=new Point(tree.Right), BackColor = Color.White };
             p.AutoScroll = true;
             p.VerticalScroll.Visible = false;
             p.VerticalScroll.Enabled = false;
@@ -65,10 +63,6 @@ namespace ToodedAB
             tree.Nodes.Add(tn);
             Controls.AddRange(new Control[] {tree,p });
 
-            sE = new Sound();
-            s = new Sound();
-            s.Music();
-
             TeineNode();
             Kassa();
             NaitaKat();
@@ -78,7 +72,7 @@ namespace ToodedAB
         {
             value = p.HorizontalScroll.Value;
             await Task.Run(() => { 
-                p.BackgroundImage = Properties.Resources.bg;
+                p.BackColor = Color.White ;
             });
         }
 
@@ -86,9 +80,6 @@ namespace ToodedAB
         {
             if (e.Node.Text == "Kassa")
             {
-                sE.Effect(Properties.Resources.click);
-                sE.Stop();
-                s.Stop();
                 this.Hide();
                 cassa = new Cassa();
                 cassa.Closed += (s, args) => this.Close();
@@ -96,9 +87,6 @@ namespace ToodedAB
             }
             else if (e.Node.Text == "Kodu")
             {
-                sE.Effect(Properties.Resources.click);
-                sE.Stop();
-                s.Stop();
                 this.Hide();
                 pood = new Pood();
                 pood.Closed += (s, args) => this.Close();
@@ -106,7 +94,6 @@ namespace ToodedAB
             }
             else if (true)
             {
-                sE.Effect(Properties.Resources.click);
                 Tooded(e);
             }
             tree.SelectedNode = null;
@@ -168,7 +155,6 @@ namespace ToodedAB
         private async void C_Click(object sender, MouseEventArgs e)
         {
             if (!(sender is Control item)) return;
-            sE.Effect(Properties.Resources.click);
             foreach (Control item1 in p.Controls)
             {
                 if (!(item1 is UserControl uc) || uc.Tag != item.Tag) continue;

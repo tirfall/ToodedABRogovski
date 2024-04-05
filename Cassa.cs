@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace ToodedAB
             this.Width = 1200;
             this.Height = 900;
             this.Text = "VS Pood | Vihane Sipelgas Kassa";
-            this.BackgroundImage = Properties.Resources.bg;
+            this.BackColor = System.Drawing.Color.White;
             this.Icon = Properties.Resources.Icon;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -71,9 +72,6 @@ namespace ToodedAB
 
         private void Btn3_Click(object sender, EventArgs e)
         {
-            //sE.Effect(Properties.Resources.click);
-            //sE.Stop();
-            //s.Stop();
             this.Hide();
             main = new Main();
             main.Closed += (s, args) => this.Close();
@@ -85,11 +83,11 @@ namespace ToodedAB
             string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arved");
             int i = 1;
             string fileName = "Arv0.pdf";
-            while (Properties.Settings.Default.Arved.Split(',').Contains(fileName))
-            {
-                fileName = $"Arv{i}.pdf";
-                i++;
-            }
+            //while (Properties.Settings.Default.Arved.Split(',').Contains(fileName))
+            //{
+            //    fileName = $"Arv{i}.pdf";
+            //    i++;
+            //}
             string filePath = Path.Combine(folderPath, fileName);
             Properties.Settings.Default.Arved += fileName + ",";
             Properties.Settings.Default.Save();
@@ -97,7 +95,7 @@ namespace ToodedAB
             PdfWriter writer = new PdfWriter(filePath);
             PdfDocument pdf = new PdfDocument(writer);
             Document document = new Document(pdf);
-            Paragraph header = new Paragraph("Vihane Sipelgas").SetTextAlignment(TextAlignment.CENTER).SetFontSize(20);
+            Paragraph header = new Paragraph("VS pood").SetTextAlignment(TextAlignment.CENTER).SetFontSize(20);
             Paragraph subheader = new Paragraph("Arv").SetTextAlignment(TextAlignment.CENTER).SetFontSize(15);
             LineSeparator ls = new LineSeparator(new DottedLine());
             Paragraph time = new Paragraph(DateTime.Now.ToString());
@@ -142,6 +140,13 @@ namespace ToodedAB
             document.Add(disc);
             document.Close();
 
+            // Открытие созданного PDF файла
+            Process.Start(filePath);
+
+            // Очистка списка товаров
+            Properties.Settings.Default.Tooded = "";
+            Properties.Settings.Default.Save();
+            ListBoxFill();
         }
 
         private void Btn1_Click(object sender, EventArgs e)

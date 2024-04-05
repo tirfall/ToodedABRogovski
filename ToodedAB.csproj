@@ -235,7 +235,6 @@
     <Compile Include="Pood.Designer.cs">
       <DependentUpon>Pood.cs</DependentUpon>
     </Compile>
-    <Compile Include="Sound.cs" />
     <Compile Include="ToodedAB.cs">
       <SubType>Form</SubType>
     </Compile>
