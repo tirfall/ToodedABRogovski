@@ -45,7 +45,7 @@ namespace ToodedAB
         {
             this.Width = 1200;
             this.Height = 900;
-            this.Text = "VS Pood | Vihane Sipelgas Kassa";
+            this.Text = "VS Pood";
             this.BackColor = System.Drawing.Color.White;
             this.Icon = Properties.Resources.Icon;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -140,10 +140,8 @@ namespace ToodedAB
             document.Add(disc);
             document.Close();
 
-            // Открытие созданного PDF файла
             Process.Start(filePath);
 
-            // Очистка списка товаров
             Properties.Settings.Default.Tooded = "";
             Properties.Settings.Default.Save();
             ListBoxFill();

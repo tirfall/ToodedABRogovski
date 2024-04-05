@@ -32,7 +32,7 @@ namespace ToodedAB
         {
             this.Width = 1200;
             this.Height = 900;
-            this.Text = "VS Pood | Vihane Sipelgas";
+            this.Text = "VS Pood";
             this.Icon = Properties.Resources.Icon;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -52,14 +52,6 @@ namespace ToodedAB
             typeof(Panel).InvokeMember("DoubleBuffered", BindingFlags.SetProperty
             | BindingFlags.Instance | BindingFlags.NonPublic, null,
             p, new object[] { true });
-            /* 
-        .InvokeMember("DoubleBuffered", ...) : Это вызов метода InvokeMember для объекта Type. 
-            Этот метод позволяет вам вызывать методы, получать или устанавливать значения свойств объектов, используя рефлексию.
-        SetProperty: Указывает, что мы хотим установить значение свойства.
-        Instance: Указывает, что мы хотим получить доступ к экземпляру свойства.
-        NonPublic: Указывает, что мы хотим получить доступ к неоткрытым членам.
-        Мы передаем null, потому что свойство DoubleBuffered не является статическим, и мы хотим получить доступ к экземпляру свойства.
-            */
             tree.Nodes.Add(tn);
             Controls.AddRange(new Control[] {tree,p });
 
@@ -133,7 +125,7 @@ namespace ToodedAB
 
                         PictureBox pb = new PictureBox() { Size = new Size(150, 150), Location = new Point(20, 20), BackColor = Color.Gray };
                         Label nimi = new Label() { Size = new Size(140, 25), Location = new Point(50, 180), Text = item1["Toodenimetus"].ToString(), Font = new Font("Arial", 15) };
-                        Label hind = new Label() { Size = new Size(140, 25), Location = new Point(50, 210), Text = "Hind: " + item1["Hind"].ToString() + "$", Font = new Font("Arial", 15) };
+                        Label hind = new Label() { Size = new Size(140, 25), Location = new Point(50, 210), Text = "Hind: " + item1["Hind"].ToString() + "€", Font = new Font("Arial", 15) };
                         Label kogus = new Label() { Size = new Size(140, 25), Location = new Point(50, 240), Text = "Kogus: " + item1["Kogus"].ToString(), Font = new Font("Arial", 15) };
                         kogus.Name = "kogus";
                         btn.Name = nimi.Text;

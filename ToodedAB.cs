@@ -310,7 +310,6 @@ namespace ToodedAB
             NaitaPilt();
         }
 
-        //�������� ��������
         private void NaitaPilt()
         {
             try

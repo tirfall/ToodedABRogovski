@@ -78,17 +78,16 @@ namespace ToodedAB
             adminPanel.Show();
         }
 
-        //Рандомная генерация текста для текстовых ящиков 
-        //используется для пароля и подсказки
+
         private async void RandomGen(TextBox textBox)
         {
             string ran = "";
             int num = new Random().Next(5, 20);
             for (int i = 0; i < num; i++)
             {
-                int listnum = new Random().Next(0, 3); //выбираю список (маленькие буквы, большие или цифры)
-                ran += lists[listnum][new Random().Next(0, lists[listnum].Length)]; //в выбранном списке случайно выбираю значение
-                await Task.Delay(1); //задержка чтобы код не выполнялся моментально и присутсовала случайная генерация
+                int listnum = new Random().Next(0, 3);
+                ran += lists[listnum][new Random().Next(0, lists[listnum].Length)]; 
+                await Task.Delay(1); 
             }
                 textBox.Text = ran;
         }

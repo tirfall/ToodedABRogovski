@@ -21,7 +21,6 @@ namespace ToodedAB
         Label home, logi, login, fpass,reg,log;
         TextBox username, password, password1, hint;
         Button sisse, registr,reset;
-        TrackBar tbsound;
         UserControl uc, uc1;
         SqlConnection connect = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\AppData\Tooded_DB.mdf;Integrated Security=True");
         SqlDataAdapter adapter_acc;
@@ -32,7 +31,7 @@ namespace ToodedAB
         {
             this.Width = 1200;
             this.Height = 900;
-            this.Text = "VS Pood | Vihane Sipelgas Sätted";
+            this.Text = "VS Pood";
             this.BackColor = Color.White;
             this.Icon = Properties.Resources.Icon;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -66,29 +65,24 @@ namespace ToodedAB
 
             Log();
 
-            Controls.AddRange(new Control[] { home, tbsound, logi, uc });
+            Controls.AddRange(new Control[] { home, logi, uc });
 
         }
 
-        
-
-        //получаю все аккаунты из базы данных
         private void GetAccounts()
         {
-            connect.Open(); //получаю все аккаунты из базы данных
+            connect.Open();
             adapter_acc = new SqlDataAdapter("SELECT Username,Password,Hint FROM Account", connect);
             DataTable dt_kat = new DataTable();
             adapter_acc.Fill(dt_kat);
             acc = new Dictionary<string, string[]>();
             foreach (DataRow item in dt_kat.Rows)
             {
-                //Словарь где имя - ключа, а пароль и подсказка это список который является значением для ключа
                 acc[item["Username"].ToString()] = new string[] { item["Password"].ToString(), item["Hint"].ToString() };
             }
             connect.Close();
         }
 
-        //UserControl для восстановления пароля
         private void Forgot()
         {
             uc1.Controls.Clear();
@@ -116,11 +110,9 @@ namespace ToodedAB
             uc1.Controls.AddRange(new Control[] { login, username, hint, password1, reset, log, reg });
         }
 
-        //при нажатии на кнопку восстановления
         private void reset_Click(object sender, EventArgs e)
         {
-            GetAccounts(); //получаю все аккаунты из бд
-            //проверяю что все условия подходят для изменения пароля
+            GetAccounts(); 
             if (!acc.ContainsKey(username.Text))
             {
                 username.BackColor = Color.Red;
@@ -137,7 +129,6 @@ namespace ToodedAB
                 hint.BackColor = Color.Red;
                 return;
             }
-            //изменяю пароль в бд
             command = new SqlCommand("UPDATE Account SET Password=@pass WHERE Username=@nimi", connect);
             connect.Open();
             command.Parameters.AddWithValue("@pass", password1.Text);
@@ -145,10 +136,9 @@ namespace ToodedAB
             command.ExecuteNonQuery();
             connect.Close();
             MessageBox.Show("Konto moodustud", "Edu!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Log(); //открываю UserControl для входа
+            Log(); 
         }
 
-        //UserControl для регистрации
         private void Reg()
         {
             uc1.Controls.Clear();
@@ -176,7 +166,6 @@ namespace ToodedAB
             uc1.Controls.AddRange(new Control[] { login, username, password, password1, hint, registr, log });
         }
 
-        //UserControl для входа
         private void Log()
         {
             uc1.Controls.Clear();
@@ -201,27 +190,21 @@ namespace ToodedAB
             uc1.Controls.AddRange(new Control[] { login, username, password, fpass, reg, sisse });
         }
 
-        //при нажатии на лейбл "забыл пароль"
         private void Fpass_MouseClick(object sender, MouseEventArgs e)
         {
-            Forgot(); //UserControl для восстановления пароля
+            Forgot(); 
         }
 
-        //при нажатии на лейбл "У меня есть аккаунт"
         private void log_MouseClick(object sender, MouseEventArgs e)
         {
-            Log(); //UserControl для логина
+            Log(); 
         }
 
-        
-
-        //при нажатии на лейбл "Регистрация"
         private void Reg_MouseClick(object sender, MouseEventArgs e)
         {
-            Reg(); //UserControl для регистрации
+            Reg(); 
         }
 
-        //Запуск формы
         private void Account()
         {
             this.Hide();
@@ -230,15 +213,13 @@ namespace ToodedAB
             accountForm.Show();
         }
 
-        //для регистрации пользователя
         private void registr_Click(object sender, EventArgs e)
         {
             username.BackColor = Color.White;
             password.BackColor = Color.White;
             password1.BackColor = Color.White;
             hint.BackColor = Color.White;
-            GetAccounts(); //Получаю все аккаунты
-            //Проверка что все данные подходят для создания аккаунта
+            GetAccounts(); 
             if (username.Text.Length <= 3 || acc.ContainsKey(username.Text))
             {
                 username.BackColor = Color.Red;
@@ -259,7 +240,6 @@ namespace ToodedAB
                 hint.BackColor = Color.Red;
                 return;
             }
-            //Добавляю аккаунт в базу данных
             command = new SqlCommand("INSERT INTO Account (Username,Password,Hint,Time,Money,Cashback) VALUES (@user,@pass,@hint,@time,@mon,@cash)", connect);
             connect.Open();
             command.Parameters.AddWithValue("@user", username.Text);
@@ -271,13 +251,11 @@ namespace ToodedAB
             command.ExecuteNonQuery();
             connect.Close();
             MessageBox.Show("Konto loodud", "Edu!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Log(); //открываю UserControl для входа
+            Log(); 
         }
 
-        // при нажатии на текстовый ящик с подсказкой
         private async void hint_MouseClick(object sender, MouseEventArgs e)
         {
-            //полное завершение анимации
             await Task.Run(() => {
                 while (hint.Text.Contains("Vihje")) 
                 { 
@@ -288,18 +266,16 @@ namespace ToodedAB
             hint.ForeColor = Color.Black;
         }
 
-        // при нажатии на текстовый ящик с паролем (текстовый ящик для регистрации)
         private async void password1_MouseClick(object sender, MouseEventArgs e)
         {
             
             
             string text = password1.Text.Replace("...","");
-            //Необходимо для полного завершения анимации
+            
             await Task.Run(() =>
             {
                 while (password1.Text.Contains(text))
                 {
-                    //Для правильной работы кода
                     Invoke((MethodInvoker)delegate {
                         password1.Text = "";
                     });
@@ -312,17 +288,16 @@ namespace ToodedAB
 
         
 
-        // Для входа в аккаунт
         private void Sisse_Click(object sender, EventArgs e)
         {
-            if (username.Text=="admin" && password.Text=="admin") //запуск админской панели
+            if (username.Text=="admin" && password.Text=="admin")
             {
                 this.Hide();
                 adminPanel = new AdminPanel();
                 adminPanel.Closed += (s, args) => this.Close();
                 adminPanel.Show();
             }
-            GetAccounts(); //получаю словарь с аккаунтами
+            GetAccounts(); 
             bool i = false;
             if (!acc.ContainsKey(username.Text))
             {
@@ -340,24 +315,19 @@ namespace ToodedAB
             else
             {
                 Properties.Settings.Default.Account = username.Text;
-                //если в аккаунт вошли то код это запоминает и теперь при каждом запуске он
-                //не будет запрашивать логин/регистрацию, а сразу запускать (если надо) форму аккаунта
                 Properties.Settings.Default.Log = true;
                 Properties.Settings.Default.Save();
                 Account();
             }
         }
 
-        // при нажатии на текстовый ящик с паролем
         private async void password_MouseClick(object sender, MouseEventArgs e)
         {
             password.BackColor = Color.White;
-            //метод для полной очистки анимации
             await Task.Run(() =>
             {
                 while (password.Text.Contains("Parool"))
                 {
-                    //нужен для корректной работы
                     Invoke((MethodInvoker)delegate { 
                         password.Text = "";
                     });
@@ -367,16 +337,13 @@ namespace ToodedAB
             password.ForeColor = Color.Black;
         }
 
-        // при нажатии на текстовый ящик с именем
         private async void Username_MouseClick(object sender, MouseEventArgs e)
         {
             username.BackColor = Color.White;
             await Task.Run(() =>
             {
-                //Нужно чтобы анимация точно прекратилась
                 while (username.Text.Contains("Nimi"))
                 {
-                    //без него код не видит правильно username
                     Invoke((MethodInvoker)delegate { username.Text = ""; });
                 }
             });
@@ -384,13 +351,9 @@ namespace ToodedAB
         }
 
 
-        // при нажатии на иконку аккаунта
         private void Account_MouseClick(object sender, MouseEventArgs e)
         {
-            switch (uc.Visible) //Свитч в котором - если UserControl для логина/регстрации включен то выключить,
-                                //а если выключен то включить его и отключить остальные элементы,
-                                //а также проверка входил ли человек в аккаунт до этого, чтобы ему
-                                //не пришлось каждый раз при запуске входить в аккаунт
+            switch (uc.Visible) 
             {
                 case true:
                     uc.Visible = false; break;
@@ -398,16 +361,14 @@ namespace ToodedAB
                     uc.Visible = true;
                     if (Properties.Settings.Default.Log)
                     {
-                        Account(); //Метод запуска формы аккаунта
+                        Account(); 
                     }
                     break;
             }
         }
 
-        // при нажатии на иконку дома
         private void Home_MouseClick(object sender, MouseEventArgs e)
         {
-            //код для запуска новой формы и закрытия этой
             this.Hide();
             pood = new Pood();
             pood.Closed += (s, args) => this.Close();

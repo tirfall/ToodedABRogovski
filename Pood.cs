@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using System.Threading.Tasks;
 
 namespace ToodedAB
 {
@@ -41,8 +36,6 @@ namespace ToodedAB
             Controls.AddRange(new Control[] { title, start, konto, exit });
         }
 
-        //При клике на кнопку с шестерёнкой (настройки)
-        //запуск другой формы
         private void Setting_MouseClick(object sender, MouseEventArgs e)
         {
             this.Hide();
@@ -51,8 +44,6 @@ namespace ToodedAB
             settings.Show();
         }
 
-        //При клике на кнопку с тележкой (вход в основной магазин)
-        //запуск другой формы
         private void Start_MouseClick(object sender, MouseEventArgs e)
         {
             this.Hide();
@@ -61,10 +52,9 @@ namespace ToodedAB
             main.Show();
         }
 
-        //При клике на кнопку EXIT
         private void Exit_MouseClick(object sender, MouseEventArgs e)
         {
-            Close(); //закрытие проекта
+            Close();
         }
     }
 }

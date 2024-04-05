@@ -21,10 +21,9 @@ namespace ToodedAB
         SqlCommand command;
         MenuStrip MainMenu;
         ToolStripMenuItem tsinfo, tskodu;
-        Label nimi, aeg, raha, bonus, level, hint, pass;
+        Label nimi, aeg, raha, bonus, level;
         Pood pood;
         Button logout;
-        bool log, pbclick = false;
         static Button[] temp;
         public Stack<int> fails { get; set; }
         public string Nimi { get; private set; }
@@ -40,7 +39,7 @@ namespace ToodedAB
         {
             this.Width = 1200;
             this.Height = 900;
-            this.Text = "VS Pood | Vihane Sipelgas Konto";
+            this.Text = "VS Pood";
             this.Icon = Properties.Resources.Icon;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -79,12 +78,9 @@ namespace ToodedAB
         }
 
 
-        //запускаю заполнение параметров обьекта
-        //добавил отдельный метод так как мне нужны эти данные во время работы формы и 
-        //чтобы не создавать обьект класса внутри себя же - добавил просто метод
         private void Initialize(string nimi)
         {
-            connect.Open(); //получаю данные аккаунта из бд (время и количество потраченных денег)
+            connect.Open(); 
             adapter_acc = new SqlDataAdapter($"SELECT Username,Password,Hint,Time,Money,Cashback FROM Account WHERE Username='{nimi}'", connect);
             DataTable dt_kat = new DataTable();
             adapter_acc.Fill(dt_kat);
@@ -93,31 +89,21 @@ namespace ToodedAB
                 Nimi = item["Username"].ToString();
                 Password = item["Password"].ToString();
                 Hint = item["Hint"].ToString();
-                Time = (int)Math.Round((Convert.ToDateTime(DateTime.Now) - ((item["Time"] as DateTime?) ?? DateTime.Now)).TotalDays, 0); //разница времени (дата сейчас - дата создания)
-                Money = (item["Money"] as int?) ?? 0; //количество потраченных денег
-                Cashback = (item["Cashback"] as int?) ?? 0; //кэшбек
-                // (item as type?) ?? default value
-                // проверяю что предмет из списка можно конвертировать в определенный тип данных
-                //и значение предмета не равно null, если же всё же равно то устанавливаю разное дефолтное значение
+                Time = (int)Math.Round((Convert.ToDateTime(DateTime.Now) - ((item["Time"] as DateTime?) ?? DateTime.Now)).TotalDays, 0); 
+                Money = (item["Money"] as int?) ?? 0; 
+                Cashback = (item["Cashback"] as int?) ?? 0; 
             }
             connect.Close();
             GetDiscount();
         }
 
-        //Конструктор для взаимодействия с аккаунтом
         public Account(string nimi)
         {
-            //заполнение параметров обьекта
             Initialize(nimi);
         }
 
-        //Получаем информацию о уровне клиента, скидки и сколько дней и денег нужно еще до следующего уровня
         private void GetInfo()
         {
-            int temptime;
-            //по сути это тот же свитч что и в GetDiscount(), но такое оформление более лучше следует правилам ООП - SRP
-            //Тут вместо уже того безумного условия мы берем просто скидку и уже определяем какой текст вставить в текстовые ящики
-            //если бы метод был единым то при определенных обстоятельствах мы бы просто так нагружали программу излишними процессами
             switch (Discount)
             {
                 case 40:
@@ -136,38 +122,34 @@ namespace ToodedAB
             }
         }
 
-        //определяем скидку клиента
         private void GetDiscount()
         {
             switch (Time)
             {
-                case int n when (n >= 10000):
+                case int n when (n >= 1360):
                     Discount = 40; break;
-                case int n when (n >= 5000):
+                case int n when (n >= 995):
                     Discount = 25; break;
-                case int n when (n >= 1000):
+                case int n when (n >= 830):
                     Discount = 20; break;
                 case int n when (n >= 365):
                     Discount = 10; break;
-                case int n when (n >= 150):
+                case int n when (n >= 157):
                     Discount = 5; break;
                 case int n when (n >= 0):
                     Discount = 1; break;
             }
         }
 
-        
-
-        //настройки для ToolStrip Info
         private void InfoSet()
         {
             nimi.Size = new Size(500, 30);
-            foreach (Control item in new Control[] { nimi, raha, aeg, bonus, level, logout }) //делаю нужные обьекты видимыми
+            foreach (Control item in new Control[] { nimi, raha, aeg, bonus, level, logout }) 
             {
                 item.Visible = true;
             }
             Label[] labels = new Label[] { nimi, aeg, raha, bonus };
-            for (int i = 0; i < labels.Length; i++) //настройка лейблов
+            for (int i = 0; i < labels.Length; i++)
             {
                 labels[i].BorderStyle = BorderStyle.Fixed3D;
                 labels[i].Location = new Point(700, i-1>=0 ? labels[i-1].Top+100 : 50);
